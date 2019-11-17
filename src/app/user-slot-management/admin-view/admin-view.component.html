@@ -1,0 +1,411 @@
+<div class="container-fluid">
+    <div class="row text-center border-bottom border-info">
+  
+      <div class="col-sm-12 col-md-2 col-lg-3 own-navbar">
+        <h5 class="border border-info"> Meet - Admin Dashboard</h5>
+      </div>
+      <div class="col-sm-12 col-md-3 col-lg-2 own-navbar">
+        <div class="btn-group" role="group" style="float: right;">
+          <button id="btnGroupDropUserInfo" type="button" class="btn btn-outline-info rounded" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            {{adminName ? adminName : 'Admin'}}
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDropUserInfo">
+            <a class="dropdown-item" (click)="getAdminMeetings(adminId)">View my meetings</a>
+            <a class="dropdown-item" (click)="sentMeetingRemindersonEmailFunction()">Send Reminders for Todays Meeting</a>
+            <a class="dropdown-item" (click)="logoutFunction(adminId)">Sign Out</a>
+          </div>
+        </div>
+      </div>  
+    </div>
+  
+    <div class="row">  
+      <div class="d-block d-sm-block d-md-none col-md-4 border border-info">
+        <!--testing-->  
+        <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #f5f5f5">
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+            aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>  
+          <a class="navbar-brand h1">Users of Lets Meet</a>
+        </nav>  
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+              <li class="nav-item own-navbar">
+                <input type="text" id="inputUserName" name="userName" [(ngModel)]="userName" class="form-control"
+                  placeholder="Search For User Name">
+              </li>
+  
+              <li class="nav-item own-navbar">
+                <div class="" *ngFor="let user of allUsersData | filter:userName">
+  
+                  <a (click)="getUserMeetings(user.userId)" class="list-group-item list-group-item-action" *ngIf="user.userId != adminId">
+                    <span>{{user.firstName}}
+                      {{user.lastName}}
+                    </span>
+  
+                    <span *ngIf="user.status == 'online'"><i class="online"></i></span>
+                    <span *ngIf="user.status != 'online'"><i class="offline"></i></span>
+  
+                  </a>
+                </div>
+              </li>
+  
+            </ul>
+          </div>
+  
+        <!--testing end-->
+  
+      </div>   
+      <div class="d-none d-sm-none d-md-block col-md-4  border border-info" style="margin-bottom: 7vh;">
+          <br>
+          <h5 class="btn btn-outline-info"> Users of Lets Meet </h5>
+          <input type="text" id="inputUserName" name="userName" [(ngModel)]="userName" class="form-control" placeholder="Search For User Name">
+          <br>    
+          <div class="people-list">
+              <div class="list-group list-group-flush" *ngFor="let user of allUsersData | filter:userName">
+            
+                  <a (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName)" class="list-group-item list-group-item-action" *ngIf="user.userId != adminId">                                                    
+                    <span>{{user.firstName}}
+                      {{user.lastName}}
+                    </span>                    
+                    <span *ngIf="user.status == 'online'"><i class="online"></i></span>
+                    <span *ngIf="user.status != 'online'"><i class="offline"></i></span>            
+                  </a>
+                </div>           
+          </div>    
+      </div>
+  
+      <div class="col-sm-12 col-md-8 border border-info" style="margin-bottom: 7vh;">  
+        <h6 class="text-center">Meetings associated with <span class="text-primary"> {{this.currentUserName}}</span></h6>
+        
+        <div class="row">
+          <div class="col-md-3">
+            <div class="btn-group btn-group-sm" >
+              <div
+                class="btn btn-primary btn-sm"
+                mwlCalendarPreviousView
+                [view]="view"
+                [(viewDate)]="viewDate"
+                (viewDateChange)="closeOpenMonthViewDay()"
+              >
+              <i class="fa fa-angle-left"></i>
+              </div>
+              <div
+                class="btn btn-outline-secondary btn-sm"
+                mwlCalendarToday
+                [(viewDate)]="viewDate"
+              >
+                Today
+              </div>
+              <div
+                class="btn btn-primary btn-sm"
+                mwlCalendarNextView
+                [view]="view"
+                [(viewDate)]="viewDate"
+                (viewDateChange)="closeOpenMonthViewDay()"
+              >
+              <i class="fa fa-angle-right"></i>
+              </div>
+            </div>
+          </div>        
+          <div class="col-md-3">
+            <span>{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</span>
+          </div>        
+          <div class="col-md-4">
+            <div class="btn-group btn-group-sm">
+              <div
+                class="btn btn-primary btn-sm"
+                (click)="setView(CalendarView.Month)"
+                [class.active]="view === CalendarView.Month"
+              >
+                Month
+              </div>
+              <div
+                class="btn btn-primary btn-sm"
+                (click)="setView(CalendarView.Week)"
+                [class.active]="view === CalendarView.Week"
+              >
+                Week
+              </div>
+              <div
+                class="btn btn-primary btn-sm"
+                (click)="setView(CalendarView.Day)"
+                [class.active]="view === CalendarView.Day"
+              >
+                Day
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div [ngSwitch]="view" style="height:70vh;overflow-y:scroll">
+          <mwl-calendar-month-view
+      *ngSwitchCase="CalendarView.Month"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      [activeDayIsOpen]="activeDayIsOpen"
+      (dayClicked)="dayClicked($event.day)"
+      (eventClicked)="handleEvent('Clicked', $event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)"
+    >
+    </mwl-calendar-month-view>
+    <mwl-calendar-week-view
+      *ngSwitchCase="CalendarView.Week"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="handleEvent('Clicked', $event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)"
+    >
+    </mwl-calendar-week-view>
+    <mwl-calendar-day-view
+      *ngSwitchCase="CalendarView.Day"
+      [viewDate]="viewDate"
+      [events]="events"
+      [refresh]="refresh"
+      (eventClicked)="handleEvent('Clicked', $event.event)"
+      (eventTimesChanged)="eventTimesChanged($event)"
+    >
+    </mwl-calendar-day-view>
+  </div>
+  
+  <br />
+  <h3>
+    Edit events
+    <button class="btn btn-primary pull-right" (click)="goToAddMeeting()">
+        <i class="fa fa-plus"></i>
+      Add new
+    </button>
+    <div class="clearfix"></div>
+  </h3>
+  
+      </div>
+    </div>
+  </div>
+  <ng-template #modalAddMeeting let-close="close">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Meeting</h5>
+        <button type="button" class="close" (click)="close()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #createMeetingForm="ngForm" (ngSubmit)="createMeetingFunction()">
+      <div class="modal-body">
+          <div id="picker-container">
+              <input
+                class="form-control"
+                type="text"
+                name="startDate1"
+                mwlFlatpickr
+                [(ngModel)]="startDate1"
+                (ngModelChange)="refresh.next()"
+                [altInput]="true"
+                [convertModelValue]="true"
+                [enableTime]="true"
+                dateFormat="Y-m-dTH:i"
+                altFormat="F j, Y H:i"
+                placeholder="Start Date"
+              />
+          </div>
+          <div class="container">            
+                <input
+                class="form-control"
+                type="text"
+                name="endDate1"
+                mwlFlatpickr
+                [(ngModel)]="endDate1"
+                (ngModelChange)="refresh.next()"
+                [altInput]="true"
+                [convertModelValue]="true"
+                [enableTime]="true"
+                dateFormat="Y-m-dTH:i"
+                altFormat="F j, Y H:i"
+                placeholder="End Date"
+              />            
+          </div>
+        
+        <div class="row">
+          <div class="col-md">
+            <span>Meeting hosted by : {{adminName}}</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md">            
+            <input type="text" #meetingAgenda="ngModel" id="inputTitle" name="title" [(ngModel)]="title" class="form-control"
+            placeholder="Meeting Title" required autofocus>
+
+          <div [hidden]="meetingAgenda.pristine || meetingAgenda.valid" class="alert alert-danger">
+            <div *ngIf="meetingAgenda.errors?.required">
+              ** Meeting  Title is required!
+            </div>
+          </div>
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md">
+            <textarea type="text" #agenda="ngModel" id="inputDescription" name="description" [(ngModel)]="description"
+                  class="form-control" placeholder="Description of Meeting" required></textarea>
+
+                <div [hidden]="agenda.pristine || agenda.valid" class="alert alert-danger">
+                  <div *ngIf="agenda.errors?.required">
+                    ** Description is required!
+                  </div>
+                </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div class="form-group">              
+              <input type="text" #location="ngModel" id="inputVenue" name="venue"
+                [(ngModel)]="venue" class="form-control" placeholder="Venue" required>
+
+              <div [hidden]="location.pristine || location.valid" class="alert alert-danger">                
+                <div *ngIf="location.errors?.required">
+                  ** Location is required!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>     
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" [disabled]="!createMeetingForm.form.valid" class="btn btn-default" (click)="createMeetingFunction()">
+          create Meeting
+        </button>        
+      </div>
+    </form>
+    </ng-template>
+    <!-- Update Meeting Modal -->
+    <ng-template #modalEditMeeting let-close="close">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Meeting</h5>
+        <button type="button" class="close" (click)="close()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form #updateMeetingForm="ngForm" (ngSubmit)="createBlog()">
+      <div class="modal-body">
+        
+          <div class="row">
+            <div class="col-md-5">   
+                <label>Meeting Agenda</label>         
+                <input type="text" #meetingAgenda="ngModel" id="inputTitle" name="title" [(ngModel)]="modalData.event.title" class="form-control"
+                placeholder="Meeting Title" required autofocus>
+    
+              <div [hidden]="meetingAgenda.pristine || meetingAgenda.valid" class="alert alert-danger">
+                <div *ngIf="meetingAgenda.errors?.required">
+                  ** Meeting  Title is required!
+                </div>
+              </div>
+    
+            </div>
+            <div class="col-md-5">
+              <label>Meeting Start Date & Time </label>
+              <input
+                class="form-control"
+                name="startDate1"
+                type="text"
+                #startDateText="ngModel"
+                mwlFlatpickr
+                [(ngModel)]="modalData.event.meetingStartDate"
+                (ngModelChange)="refresh.next()"
+                [altInput]="true"
+                [convertModelValue]="true"
+                [enableTime]="true"
+                dateFormat="Y-m-dTH:i"
+                altFormat="F j, Y H:i"
+                placeholder="Start Date"
+                required
+              />
+            </div>
+          </div>
+          <div [hidden]="startDateText.pristine || startDateText.valid" class="alert alert-danger">
+              <div *ngIf="startDateText.errors?.required">
+                ** EndDate  is required!
+              </div>
+            </div>
+          <div class="row"> 
+              <div class="col-md-5">
+                  <label>Meeting Description</label>
+                  <textarea type="text" #agenda="ngModel" id="inputDescription" name="description" [(ngModel)]="modalData.event.meetingDescription"
+                        class="form-control" placeholder="Description of Meeting" required></textarea>
+      
+                      <div [hidden]="agenda.pristine || agenda.valid" class="alert alert-danger">
+                        <div *ngIf="agenda.errors?.required">
+                          ** Description is required!
+                        </div>
+                      </div>
+                </div>  
+            <div class="col-md-5">   
+              <label>Meeting End Date & Time</label>      
+                <input
+                class="form-control"
+                type="text"
+                name="endDate1"
+                #endDateText="ngModel"
+                mwlFlatpickr
+                [(ngModel)]="modalData.event.meetingEndDate"
+                (ngModelChange)="refresh.next()"
+                [altInput]="true"
+                [convertModelValue]="true"
+                [enableTime]="true"
+                dateFormat="Y-m-dTH:i"
+                altFormat="F j, Y H:i"
+                placeholder="End Date"
+              />  
+              <div [hidden]="endDateText.pristine || endDateText.valid" class="alert alert-danger">
+                  <div *ngIf="endDateText.errors?.required">
+                    ** EndDate  is required!
+                  </div>
+                </div> 
+            </div>         
+          </div>
+          
+        
+        <div class="row">
+          <div class="col-md-5">
+            <div class="form-group">   
+              <label>Meeting Venue</label>           
+              <input type="text" #location="ngModel" id="inputVenue" name="venue"
+                [(ngModel)]="modalData.event.meetingPlace" class="form-control" placeholder="Venue" required>
+              <div [hidden]="location.pristine || location.valid" class="alert alert-danger">                
+                <div *ngIf="location.errors?.required">
+                  ** Location is required!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>     
+      </div>  
+      
+      <div class="row">
+          <div class="col-md">
+            <span>Meeting hosted by : {{adminName}}</span>
+          </div>
+        </div>
+
+      <div class="modal-footer">
+        <button type="button"[disabled]="!updateMeetingForm.form.valid" class="btn btn-outline-secondary" (click)="updateMeetingFunction(modalData.event)">
+          update Meeting
+        </button>
+      </div>
+    </form>
+    </ng-template>
+    <ng-template #modalDeleteMeeting let-close="close">
+        <div class="modal-header">
+            <h5 class="modal-title">Delete Meeting</h5>
+            <button type="button" class="close" (click)="close()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <div class="modal-body text-center">
+          <p>Do you want to confirm?</p>
+          <button type="button" class="btn btn-default" (click)="deleteMeetingFunction(modalData.event,true)" >Yes</button>
+          <button type="button" class="btn btn-primary" (click)="deleteMeetingFunction(modalData.event, false)" >No</button>
+        </div>
+      </ng-template>

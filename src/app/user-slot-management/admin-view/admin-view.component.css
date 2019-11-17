@@ -1,0 +1,64 @@
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.42;
+    border-radius: 15px;
+  }
+  
+  .ng-valid[required], .ng-valid.required {
+    border-left: 5px solid green
+}
+
+.ng-invalid:not(form) {
+    border-left: 5px solid rgb(231, 13, 13)
+}
+
+  #picker-container .flatpickr-calendar {
+    
+    top: 280.167px;
+    left: 179.667px;
+    right: auto;
+  }
+  /* #picker-container .flatpickr-calendar.arrowBottom {
+    top: auto !important;
+    bottom: 60px !important;
+    left: 0 !important;
+  } */
+  .btn-circle.btn-lg {
+      width: 50px;
+      height: 50px;
+      padding: 10px 16px;
+      font-size: 18px;
+      line-height: 1.33;
+      border-radius: 25px;
+    }
+   
+    .online{
+  
+      height: 10px;
+      width: 10px;
+      background-color:green;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    
+    .offline{
+    
+      height: 10px;
+      width: 10px;
+      background-color:red;
+      border-radius: 50%;
+      display: inline-block;
+    }
+  
+    .people-list {
+      height: 72vh;
+      overflow-y: scroll;
+  }
+  
+  .own-navbar{
+    padding-bottom: 1vh;
+  }

@@ -1,0 +1,161 @@
+<div class="container">
+    
+      <div class="jumbotron col-md-6 mx-auto" style="background-color: #e3f2fd">        
+          <div class="text-center">
+              <h5>Register to  MeetUp App </h5>         
+          </div>
+          <form id="signupform" class="form-horizontal" role="form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="firstname" class="control-label">First Name</label>                  
+                    <input type="text" #firstNameText="ngModel" pattern="[A-za-z ]+$" minlength="4" id="inputFirstName" name="firstName" [(ngModel)]="firstName"
+                       class="form-control" placeholder="First Name" required autofocus>          
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="lastname" class="control-label">Last Name</label>                  
+                    <input type="text" #lastNameText="ngModel" pattern="[A-za-z ]+$" minlength="3" id="inputLastName" name="lastName" [(ngModel)]="lastName"
+                        class="form-control" placeholder="Last Name" required>                
+                </div>
+              </div>
+              <div class="col-md">
+                <div *ngIf="firstNameText.invalid && (firstNameText.dirty || firstNameText.touched)"
+                  class="alert alert-danger">                   
+                  <div *ngIf="firstNameText.errors.required">
+                    Name is required.
+                  </div>
+                  <div *ngIf="firstNameText.errors.minlength">
+                    Name must be at least 4 characters long.
+                  </div>  
+                  <div *ngIf="firstNameText.errors?.pattern">
+                       First name should contain only letters !
+                  </div>                
+                </div>
+                <div *ngIf="lastNameText.invalid && (lastNameText.dirty || lastNameText.touched)"
+                  class="alert alert-danger">                   
+                  <div *ngIf="lastNameText.errors.required">
+                    Name is required.
+                  </div>
+                  <div *ngIf="lastNameText.errors.minlength">
+                    Name must be at least 4 characters long.
+                  </div>  
+                  <div *ngIf="lastNameText.errors?.pattern">
+                       Last name should contain only letters !
+                  </div>                
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md">
+               <div class="input-group mb-3">           
+                 <div class="input-group-prepend">
+                    <span class="input-group-text">  
+                        <i class="fa fa-envelope"></i>  
+                      </span> 
+                </div>               
+                    <input type="email" #emailAddress="ngModel" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" id="inputEmail" name="email"
+                    [(ngModel)]="email" class="form-control" placeholder="Email address" required>
+                </div>
+                <div [hidden]="emailAddress.valid || emailAddress.pristine" class="alert alert-danger">
+                  <div *ngIf="emailAddress.errors?.pattern">
+                    ** Email is invalid!
+                  </div>
+                  <div *ngIf="emailAddress.errors?.required">
+                    ** Email is required!
+                  </div>                
+              </div>
+            </div>
+          </div>
+            <div class="row">
+              <div class="col-md">
+              <div class="input-group mb-3">                                
+                <div class="input-group-prepend">
+                    <span class="input-group-text">  
+                        <i class="fa fa-user"></i>  
+                    </span> 
+                </div>               
+                  <input type="text" #user="ngModel" minlength="2" id="inputUserName" name="userName" [(ngModel)]="userName"
+                    class="form-control" placeholder="User Name" required>
+                  <div [hidden]="user.pristine || user.valid" class="alert alert-danger">                
+                      <div *ngIf="user.errors?.minlength">
+                        ** User Name should contain minimum  letters!
+                      </div>                  
+                      <div *ngIf="user.errors?.required">
+                          ** User Name is required!
+                      </div>
+                  </div>                       
+                </div>
+              </div>
+            </div>
+            <div class="row">
+             <div class="col-md">
+              <div class="input-group mb-3">                 
+                <div class="input-group-prepend">
+                    <span class="input-group-text">  
+                        <i class="fa fa-lock"></i>  
+                    </span> 
+                </div>            
+                  <input type="password" #passwordCheck="ngModel" id="inputPassword" name="password" [(ngModel)]="password" class="form-control" placeholder="Password"
+                    minlength="8" required>                  
+                </div>
+                <div [hidden]="passwordCheck.valid || passwordCheck.pristine" class="alert alert-danger">
+                    <div *ngIf="passwordCheck.errors?.minlength">
+                      Password should contain atleast 8 characters!
+                    </div>
+                    <div *ngIf="passwordCheck.errors?.required">
+                      Password is required!!
+                    </div>
+                  </div>
+             </div>
+            </div>
+  
+            <div class="row">
+              <div class="col-md">
+                <div class="input-group mb-3">                  
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">  
+                            <i class="fa fa-globe"></i>  
+                        </span> 
+                    </div>                 
+                    <select [(ngModel)]="country" #Country="ngModel" name="country" class="form-control" id="inputCountry" (click)="onChangeOfCountry()"
+                      required>
+                      <option selected value="Select country">Select country</option>
+                      <option *ngFor="let country of countries" [value]="country.code">{{country.name}}</option>
+                    </select>                  
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md">
+                <div class="form-group">
+                  <label for="mobile" class="control-label">Mobile</label>                  
+                    <div class="input-group">
+                      <div class="input-group-text">+{{countryCode}}</div>
+                      <input type="number" #mobileNum="ngModel" pattern="^\d{10}$" id="inputMobile" class="form-control" name="mobile" [(ngModel)]="mobileNumber"
+                        placeholder="Mobile" required>
+                    </div>
+                </div>
+              </div>
+            </div> 
+            <div class="form-group text-center">
+              <div class="col-md-12">
+                <button id="btn-signup" type="button" class="btn btn-primary" (click)="signupFunction()">
+                  <i class="icon-hand-right"></i> Sign Up to start scheduling</button>
+              </div>
+            </div>
+            <hr>
+            
+            <div class="form-group text-center">
+              <div class="col-md-12">
+                <button (click)="socialSignIn('googole')" >Sign in with Google
+                  <span class='fa fa-google' style='font-size:48px;color:red'></span>
+                </button>
+              </div>
+            </div>
+          </form>        
+      </div>      
+    </div>
+  
+  
