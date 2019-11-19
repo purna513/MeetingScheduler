@@ -48,18 +48,16 @@ public signInFunction(): any {
           Cookie.set('authToken', apiResponse.data.authToken);
           Cookie.set('receiverId', apiResponse.data.userDetails.userId);
           Cookie.set('receiverName', `${apiResponse.data.userDetails.firstName} ${apiResponse.data.userDetails.lastName}`);
-          this.userService.setUserInfoInLocalStorage(apiResponse.data.userDetails);
-          
-          this.router.navigate(['/adminView']);
-          // setTimeout(() => {
+          this.userService.setUserInfoInLocalStorage(apiResponse.data.userDetails);                    
+          setTimeout(() => {
+            console.log(apiResponse.data.userDetails.isAdmin)
+            if(apiResponse.data.userDetails.isAdmin == true){
+              this.router.navigate(['/adminView']);
+            }else{
+              this.router.navigate(['/userView']);
+            }
 
-          //   if(apiResponse.data.userDetails.isAdmin == "true"){
-          //     this.goToAdminDashboard();
-          //   }else{
-          //     this.goToUserDashboard();
-          //   }
-
-          // }, 1000);//redirecting to Dashboard page
+          }, 1000);//redirecting to Dashboard page
 
         }
         else {

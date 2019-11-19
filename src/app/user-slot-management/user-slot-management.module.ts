@@ -10,11 +10,16 @@ import { FormsModule } from '@angular/forms';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { AdminViewComponent } from './admin-view/admin-view.component';
 import { DlDateTimeDateModule, DlDateTimePickerModule } from 'angular-bootstrap-datetimepicker';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
+import { BrowserModule } from '@angular/platform-browser';
 @NgModule({
   declarations: [UserViewComponent, AdminViewComponent],
   imports: [
     CommonModule,
+    BrowserModule,
     BrowserAnimationsModule,
+    OwlDateTimeModule, 
+    OwlNativeDateTimeModule,
     FlatpickrModule.forRoot(),
     CalendarModule.forRoot({
       provide: DateAdapter,

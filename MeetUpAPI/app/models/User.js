@@ -16,6 +16,10 @@ let userSchema = new Schema({
     type: String,
     default: ''
   },
+  userName: {
+    type: String,
+    default: ''
+  },
   isAdmin:{
     type:Boolean,
     default:'true'
@@ -27,6 +31,10 @@ let userSchema = new Schema({
   password: {
     type: String,
     default: 'passskdajakdjkadsj'
+  },
+  status:{
+    type:String,
+    default:'offline'
   },
   email: {
     type: String,

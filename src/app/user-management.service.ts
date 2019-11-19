@@ -101,7 +101,7 @@ export class UserManagementService {
   /* Start Meeting Management Functions */
 
   public addMeeting(data): Observable<any>{
-
+    console.log(data.meetingStartDate);
     const params = new HttpParams()
       .set('meetingTopic', data.meetingTopic)
       .set('hostId', data.hostId)
@@ -114,6 +114,7 @@ export class UserManagementService {
       .set('meetingDescription',data.meetingDescription)
       .set('meetingPlace',data.meetingPlace)
       .set('authToken',data.authToken)
+      .set('emailAddress',data.emailAddress)
 
     return this._http.post(`${this.baseUrl}/meetings/addMeeting`, params);
   }//end addMeeting
@@ -127,6 +128,7 @@ export class UserManagementService {
   
   public updateMeeting(data): Observable<any>{
 
+    console.log(data.participantEmail +"Frrom update Meeting service")
     const params = new HttpParams()
       .set('meetingTopic', data.meetingTopic)
       .set('meetingStartDate',data.meetingStartDate)

@@ -169,4 +169,21 @@
       </button>
     </div>
   </ng-template>
+  
+<ng-template #modalEventNotification let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">Meeting Reminder</h5>
+    <button type="button" class="close" (click)="close()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <h6 class="card-title">Your meeting <span><i> {{modalData?.event.meetingTopic}} </i></span> will start soon!</h6>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-success" (click)="modalData?.event.remindMe=true;gentleReminder=true;close()">Snooze</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modalData?.event.remindMe=false;gentleReminder=true;close()">Dismiss</button>
+  </div>
+</ng-template>
 </div>

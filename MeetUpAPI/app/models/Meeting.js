@@ -53,6 +53,11 @@ let meetingSchema = new Schema({
     type: String,
     default: ''
   },
+  
+  participantEmail: {
+    type: String,
+    default: ''
+  },
   createdOn :{
     type:Date,
     default:""

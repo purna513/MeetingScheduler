@@ -16,7 +16,7 @@ const UserModel = mongoose.model('User')
 */
 
 let addMeetingFunction = (req, res) => {
-
+    console.log(req.body.emailAddress + "From Add meeting Fuction Jeeeee");
     let validateUserInput = () => {
         return new Promise((resolve, reject) => {
             if (req.body.meetingTopic && req.body.hostId && req.body.hostName &&
@@ -33,7 +33,7 @@ let addMeetingFunction = (req, res) => {
 
     let addMeeting = () => {
         return new Promise((resolve, reject) => {
-            //console.log(req.body)
+            console.log(req.body)
             let newMeeting = new MeetingModel({
                 meetingId: shortid.generate(),
                 meetingTopic: req.body.meetingTopic,
@@ -41,7 +41,7 @@ let addMeetingFunction = (req, res) => {
                 hostName: req.body.hostName,
                 participantId: req.body.participantId,
                 participantName: req.body.participantName,
-                //participantEmail: req.body.participantEmail,
+                participantEmail: req.body.emailAddress,
                 meetingStartDate: req.body.meetingStartDate,
                 meetingEndDate: req.body.meetingEndDate,
                 meetingDescription: req.body.meetingDescription,
@@ -49,7 +49,6 @@ let addMeetingFunction = (req, res) => {
                 createdOn: time.now()
             })
 
-            console.log(newMeeting)
             newMeeting.save((err, newMeeting) => {
                 if (err) {
                     console.log(err)
@@ -59,43 +58,43 @@ let addMeetingFunction = (req, res) => {
                 } else {
                     let newMeetingObj = newMeeting.toObject();
                     //console.log(`${applicationUrl}/verify-email/${newUserObj.userId}`)
-                    //Creating object for sending welcome email
-                    // let sendEmailOptions = {
-                    //     email: newMeetingObj.participantEmail,
-                    //     name: newMeetingObj.participantName,
-                    //     subject: `Meeting Confirmed: ${newMeetingObj.meetingTopic}`,
-                    //     html: `<h3> Your meeting is planned! </h3>
-                    //           <br> Hi , ${newMeetingObj.hostName} has scheduled a meeting via Lets Meet.
-                    //           <br>  
+                   // Creating object for sending welcome email
+                    let sendEmailOptions = {
+                        email: newMeetingObj.participantEmail,
+                        name: newMeetingObj.participantName,
+                        subject: `Meeting Confirmed: ${newMeetingObj.meetingTopic}`,
+                        html: `<h3> Your meeting is planned! </h3>
+                              <br> Hi , ${newMeetingObj.hostName} has scheduled a meeting via Lets Meet.
+                              <br>  
 
-                    //         <div class="card" style="width: 18rem;">
-                    //           <div class="card-body">
-                    //               <h5 class="card-title">Agenda</h5>
-                    //               <p class="card-text">${newMeetingObj.meetingDescription}</p>
-                    //           </div>
-                    //         </div>
+                            <div class="card" style="width: 18rem;">
+                              <div class="card-body">
+                                  <h5 class="card-title">Agenda</h5>
+                                  <p class="card-text">${newMeetingObj.meetingDescription}</p>
+                              </div>
+                            </div>
 
                               
-                    //         <div class="card" style="width: 18rem;">
-                    //             <div class="card-body">
-                    //                 <h5 class="card-title">When</h5>
-                    //                 <p class="card-text">${newMeetingObj.meetingStartDate}</p>
-                    //             </div>
-                    //         </div>
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title">When</h5>
+                                    <p class="card-text">${newMeetingObj.meetingStartDate}</p>
+                                </div>
+                            </div>
                             
-                    //         <div class="card" style="width: 18rem;">
-                    //             <div class="card-body">
-                    //                 <h5 class="card-title">Where</h5>
-                    //                 <p class="card-text">${newMeetingObj.meetingPlace}</p>
-                    //             </div>
-                    //         </div>
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Where</h5>
+                                    <p class="card-text">${newMeetingObj.meetingPlace}</p>
+                                </div>
+                            </div>
 
-                    //         `
-                    // }
+                            `
+                    }
 
-                    // setTimeout(() => {
-                    //     emailLib.sendEmail(sendEmailOptions);
-                    // }, 2000);
+                    setTimeout(() => {
+                        emailLib.sendEmail(sendEmailOptions);
+                    }, 2000);
 
                     resolve(newMeetingObj)
                 }
@@ -126,6 +125,7 @@ let getAllMeetingsFunction = (req, res) => {
 
     let findUserDetails = () => {
         return new Promise((resolve, reject) => {
+            console.log(req.params.userId);
             UserModel.findOne({ 'userId': req.params.userId })
                 .select()
                 .lean()
@@ -150,8 +150,10 @@ let getAllMeetingsFunction = (req, res) => {
     let findMeetings = (userDetails) => {
         return new Promise((resolve, reject) => {
 
+            console.log(userDetails.isAdmin)
             
-            if (userDetails.isAdmin == 'true') {
+            if (userDetails.isAdmin) {
+                console.log("Hii");
                 MeetingModel.find({ 'hostId': req.params.userId })
                     .select()
                     .lean()
@@ -170,7 +172,7 @@ let getAllMeetingsFunction = (req, res) => {
                             resolve(apiResponse)
                         }
                     })
-
+            
             }
             else {
                 MeetingModel.find({ 'participantId': req.params.userId })
@@ -183,7 +185,7 @@ let getAllMeetingsFunction = (req, res) => {
                             let apiResponse = response.generate(true, 'Failed To Find Meetings', 500, null)
                             reject(apiResponse)
                         } else if (check.isEmpty(meetingDetails)) {
-                            logger.info('No Meeting Found', 'Meeting  Controller:findMeetings')
+                            logger.info('No Meeting Found', 'Meeting  Controller:findParticipant Meetings')
                             let apiResponse = response.generate(true, 'No Meeting Found', 404, null)
                             reject(apiResponse)
                         } else {
@@ -210,7 +212,6 @@ let getAllMeetingsFunction = (req, res) => {
         })
 
 }// end getAllMeetingsFunction 
-
 
 
 /* Start Update Meeting details */

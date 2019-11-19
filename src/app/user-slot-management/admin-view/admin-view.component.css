@@ -58,7 +58,16 @@
       height: 72vh;
       overflow-y: scroll;
   }
-  
-  .own-navbar{
-    padding-bottom: 1vh;
+
+  #topContainer{
+    background-color: floralwhite;
   }
+  
+  .people-list .list-group .list-group-item a:hover {
+    background-color: rgb(19, 171, 231);
+  }
+
+  .jumbotron {
+    background-color: rgba(99, 90, 90, 0.055);
+    
+    }

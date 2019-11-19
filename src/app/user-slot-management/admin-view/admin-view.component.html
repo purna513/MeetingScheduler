@@ -1,22 +1,20 @@
-<div class="container-fluid">
-    <div class="row text-center border-bottom border-info">
-  
-      <div class="col-sm-12 col-md-2 col-lg-3 own-navbar">
-        <h5 class="border border-info"> Meet - Admin Dashboard</h5>
+<div class="container-fluid">    
+      <div class="row" id="topContainer">
+      <div class="col-sm-12 col-md-6 col-lg-3 ">
+        <span> Meet Up App- Admin Dashboard</span>
       </div>
-      <div class="col-sm-12 col-md-3 col-lg-2 own-navbar">
-        <div class="btn-group" role="group" style="float: right;">
-          <button id="btnGroupDropUserInfo" type="button" class="btn btn-outline-info rounded" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            {{adminName ? adminName : 'Admin'}}
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDropUserInfo">
-            <a class="dropdown-item" (click)="getAdminMeetings(adminId)">View my meetings</a>
-            <a class="dropdown-item" (click)="sentMeetingRemindersonEmailFunction()">Send Reminders for Todays Meeting</a>
-            <a class="dropdown-item" (click)="logoutFunction(adminId)">Sign Out</a>
-          </div>
+      <div class="col-sm-12 col-md-6 col-lg-5">
+        <div class="btn-group" role="group" >
+          <button  type="button" class="btn btn-outline-info rounded" (click)="getAdminMeetings()"
+          ><i class="fa fa-user"></i>
+            View my Meetings
+          </button>          
         </div>
       </div>  
+      <div class="col">        
+          <button  type="button" class="btn btn-outline-info rounded" (click)="logoutFunction(adminId)"
+          ><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</button>
+      </div>    
     </div>
   
     <div class="row">  
@@ -39,7 +37,7 @@
               <li class="nav-item own-navbar">
                 <div class="" *ngFor="let user of allUsersData | filter:userName">
   
-                  <a (click)="getUserMeetings(user.userId)" class="list-group-item list-group-item-action" *ngIf="user.userId != adminId">
+                  <a (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email)" class="list-group-item list-group-item-action" *ngIf="user.userId != adminId">
                     <span>{{user.firstName}}
                       {{user.lastName}}
                     </span>
@@ -63,9 +61,9 @@
           <input type="text" id="inputUserName" name="userName" [(ngModel)]="userName" class="form-control" placeholder="Search For User Name">
           <br>    
           <div class="people-list">
-              <div class="list-group list-group-flush" *ngFor="let user of allUsersData | filter:userName">
+              <div class="list-group list" *ngFor="let user of allUsersData | filter:userName">
             
-                  <a (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName)" class="list-group-item list-group-item-action" *ngIf="user.userId != adminId">                                                    
+                  <a  (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email)" class="list-group-item list-group-item-action list-group-item-info" *ngIf="user.userId != adminId">                                                    
                     <span>{{user.firstName}}
                       {{user.lastName}}
                     </span>                    
@@ -76,8 +74,10 @@
           </div>    
       </div>
   
-      <div class="col-sm-12 col-md-8 border border-info" style="margin-bottom: 7vh;">  
-        <h6 class="text-center">Meetings associated with <span class="text-primary"> {{this.currentUserName}}</span></h6>
+      <div class="col-sm-12 col-md-8 border border-info" style="margin-bottom: 7vh;"> 
+
+        <h6 *ngIf="isAdmin" class="text-center">Welcome Admin Check your calendar for Meetings associated with all participants </h6>
+        <h6 *ngIf="isUser" class="text-center">Meetings associated with <span class="text-primary"> {{this.currentUserName}}</span></h6>
         
         <div class="row">
           <div class="col-md-3">
@@ -172,14 +172,15 @@
   </div>
   
   <br />
-  <h3>
-    Edit events
+  <h6 *ngIf="isAdmin" class="text-center">Select a User to schedule meeting </h6>
+  <h6 *ngIf="isUser">
+    create new meeting with   {{this.currentUserName}}
     <button class="btn btn-primary pull-right" (click)="goToAddMeeting()">
         <i class="fa fa-plus"></i>
-      Add new
+      ADD
     </button>
     <div class="clearfix"></div>
-  </h3>
+  </h6>
   
       </div>
     </div>
@@ -193,44 +194,32 @@
       </div>
       <form #createMeetingForm="ngForm" (ngSubmit)="createMeetingFunction()">
       <div class="modal-body">
-          <div id="picker-container">
-              <input
-                class="form-control"
-                type="text"
-                name="startDate1"
-                mwlFlatpickr
-                [(ngModel)]="startDate1"
-                (ngModelChange)="refresh.next()"
-                [altInput]="true"
-                [convertModelValue]="true"
-                [enableTime]="true"
-                dateFormat="Y-m-dTH:i"
-                altFormat="F j, Y H:i"
-                placeholder="Start Date"
-              />
+          <div class="row">
+              <div class="col-md">
+                <span>Meeting hosted by : {{adminName}}</span>
+              </div>
+            </div>
+          <div class="row">
+          <div class="col-md-5">
+              <label for="startTime" class="sr-only">Start Time:</label>
+              <input [owlDateTime]="dt1" name="startDate1" [(ngModel)]="startDate1" placeholder="Start Date Time">
+              <span [owlDateTimeTrigger]="dt1">
+                <i class="fa fa-calendar"></i>
+              </span>
+              <owl-date-time #dt1></owl-date-time>              
           </div>
-          <div class="container">            
-                <input
-                class="form-control"
-                type="text"
-                name="endDate1"
-                mwlFlatpickr
-                [(ngModel)]="endDate1"
-                (ngModelChange)="refresh.next()"
-                [altInput]="true"
-                [convertModelValue]="true"
-                [enableTime]="true"
-                dateFormat="Y-m-dTH:i"
-                altFormat="F j, Y H:i"
-                placeholder="End Date"
-              />            
+          <div class="col-md-5">
+              <label for="endTime" class="sr-only">End Time:</label>
+              <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="endDate1" placeholder="End Date Time">
+
+              <span [owlDateTimeTrigger]="dt2">
+                <i class="fa fa-calendar"></i>
+              </span>
+              <owl-date-time #dt2></owl-date-time>
           </div>
+        </div>                    
         
-        <div class="row">
-          <div class="col-md">
-            <span>Meeting hosted by : {{adminName}}</span>
-          </div>
-        </div>
+        <br>
         <div class="row">
           <div class="col-md">            
             <input type="text" #meetingAgenda="ngModel" id="inputTitle" name="title" [(ngModel)]="title" class="form-control"
@@ -244,6 +233,7 @@
 
           </div>
         </div>
+        <br>
         <div class="row">
           <div class="col-md">
             <textarea type="text" #agenda="ngModel" id="inputDescription" name="description" [(ngModel)]="description"
@@ -256,7 +246,7 @@
                 </div>
           </div>
         </div>
-        
+        <br>
         <div class="row">
           <div class="col-12">
             <div class="form-group">              
@@ -274,7 +264,7 @@
       </div>
       
       <div class="modal-footer">
-        <button type="button" [disabled]="!createMeetingForm.form.valid" class="btn btn-default" (click)="createMeetingFunction()">
+        <button type="button" [disabled]="!createMeetingForm.form.valid" class="btn btn-primary" (click)="createMeetingFunction()">
           create Meeting
         </button>        
       </div>
@@ -305,30 +295,15 @@
     
             </div>
             <div class="col-md-5">
-              <label>Meeting Start Date & Time </label>
-              <input
-                class="form-control"
-                name="startDate1"
-                type="text"
-                #startDateText="ngModel"
-                mwlFlatpickr
-                [(ngModel)]="modalData.event.meetingStartDate"
-                (ngModelChange)="refresh.next()"
-                [altInput]="true"
-                [convertModelValue]="true"
-                [enableTime]="true"
-                dateFormat="Y-m-dTH:i"
-                altFormat="F j, Y H:i"
-                placeholder="Start Date"
-                required
-              />
+                <label for="startTime" class="sr-only">Start Time:</label>
+                <input [owlDateTime]="dt1" name="startDate1" [(ngModel)]="modalData.event.meetingStartDate" placeholder="Start Date Time">
+                <span [owlDateTimeTrigger]="dt1">
+                  <i class="fa fa-calendar"></i>
+                </span>
+                <owl-date-time #dt1></owl-date-time>              
             </div>
           </div>
-          <div [hidden]="startDateText.pristine || startDateText.valid" class="alert alert-danger">
-              <div *ngIf="startDateText.errors?.required">
-                ** EndDate  is required!
-              </div>
-            </div>
+          
           <div class="row"> 
               <div class="col-md-5">
                   <label>Meeting Description</label>
@@ -341,29 +316,15 @@
                         </div>
                       </div>
                 </div>  
-            <div class="col-md-5">   
-              <label>Meeting End Date & Time</label>      
-                <input
-                class="form-control"
-                type="text"
-                name="endDate1"
-                #endDateText="ngModel"
-                mwlFlatpickr
-                [(ngModel)]="modalData.event.meetingEndDate"
-                (ngModelChange)="refresh.next()"
-                [altInput]="true"
-                [convertModelValue]="true"
-                [enableTime]="true"
-                dateFormat="Y-m-dTH:i"
-                altFormat="F j, Y H:i"
-                placeholder="End Date"
-              />  
-              <div [hidden]="endDateText.pristine || endDateText.valid" class="alert alert-danger">
-                  <div *ngIf="endDateText.errors?.required">
-                    ** EndDate  is required!
-                  </div>
-                </div> 
-            </div>         
+                <div class="col-md-5">
+                    <label for="endTime" class="sr-only">End Time:</label>
+                    <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="endDate1" placeholder="End Date Time">
+      
+                    <span [owlDateTimeTrigger]="dt2">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                    <owl-date-time #dt2></owl-date-time>
+                </div>         
           </div>
           
         
@@ -409,3 +370,20 @@
           <button type="button" class="btn btn-primary" (click)="deleteMeetingFunction(modalData.event, false)" >No</button>
         </div>
       </ng-template>
+      <ng-template #modalEventNotification let-close="close">
+          <div class="modal-header">
+            <h5 class="modal-title">Meeting Reminder</h5>
+            <button type="button" class="close" (click)="close()">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h6 class="card-title">Your meeting <span><i> {{modalData?.event.meetingTopic}} </i></span> will start soon!</h6>
+          </div>
+        
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-success" (click)="modalData?.event.remindMe=true;gentleReminder=true;close()">Snooze</button>
+            <button type="button" class="btn btn-outline-secondary" (click)="modalData?.event.remindMe=false;gentleReminder=true;close()">Dismiss</button>
+          </div>
+        </ng-template>
+        

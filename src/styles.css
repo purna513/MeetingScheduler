@@ -4,4 +4,29 @@
 
 @import "../node_modules/angular-calendar/css/angular-calendar.css";
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
-@import "../node_modules/open-iconic/font/css/open-iconic-bootstrap.css"
+@import "../node_modules/open-iconic/font/css/open-iconic-bootstrap.css";
+@import "../node_modules/ng-pick-datetime/assets/style/picker.min.css";
+
+.cdk-overlay-container {
+    position: fixed;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    height: 80%;
+    width: 80%;
+    display: flex;
+    position: absolute;
+    z-index: 9999999 !important;
+}
+.cdk-global-overlay-wrapper, .cdk-overlay-container {
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    height: 80%;
+    width: 80%;
+    display: flex;
+    position: absolute;
+    z-index: 9999999 !important;
+}
+
+
