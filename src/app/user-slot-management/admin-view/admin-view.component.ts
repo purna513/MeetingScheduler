@@ -15,6 +15,24 @@ const colors: any = {
     secondary: '#FAE3E3'
   }
 };
+
+interface MyEvent extends CalendarEvent {
+  meetingStartDate: string;
+  meetingEndDate: string;
+  hostId: string;
+  meetingTopic: string;
+  hostName: string;
+  meetingDescription: string;
+  participantName: string;
+  meetingPlace : string;
+
+}
+
+interface MyCalendarEventTimesChangedEvent extends CalendarEventTimesChangedEvent{
+
+  event: MyEvent;
+}
+
 @Component({
   selector: 'app-admin-view',
   templateUrl: './admin-view.component.html',
@@ -35,7 +53,7 @@ export class AdminViewComponent implements OnInit {
   
   modalData: {
     action: string;
-    event: CalendarEvent;
+    event: MyEvent;
   };
 
   
@@ -43,13 +61,13 @@ export class AdminViewComponent implements OnInit {
   actions: CalendarEventAction[] = [
     {
       label: '<i class="fa fa-fw fa-pencil"></i>',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
+      onClick: ({ event }: { event: MyEvent }): void => {
         this.handleEvent('Edited', event);
       }
     },
     {
       label: '<i class="fa fa-fw fa-times"></i>',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
+      onClick: ({ event }: { event: MyEvent }): void => {
         this.events = this.events.filter(iEvent => iEvent !== event);
         this.handleEvent('Deleted', event);
       }
@@ -71,7 +89,7 @@ export class AdminViewComponent implements OnInit {
   public titleName : any;
   public onlineUserList: any = []
   public meetings: any = [];
-  public events: CalendarEvent[] = [];
+  public events: MyEvent[] = [];
 
   public gentleReminder: Boolean = true;
   public title: any;
@@ -82,6 +100,7 @@ export class AdminViewComponent implements OnInit {
   public currentUserId: any;
   public currentUserName: any;
   public event: any;
+  public userName;
   public isUpdate: Boolean = false;
   public currentUserEmail: any;
   public isAdmin: Boolean = true;
@@ -98,6 +117,7 @@ export class AdminViewComponent implements OnInit {
 
   }
 
+  
   ngOnInit() {
 
     this.authToken = Cookie.get('authToken');
@@ -121,7 +141,8 @@ export class AdminViewComponent implements OnInit {
   /* Calendar Events */
 
   
-  dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
+  
+  dayClicked({ date, events }: { date: Date; events: MyEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
       if (
         (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) ||
@@ -136,7 +157,7 @@ export class AdminViewComponent implements OnInit {
   }
 
 
-  eventTimesChanged({ event, newStart, newEnd }: CalendarEventTimesChangedEvent): void {
+  eventTimesChanged({ event, newStart, newEnd }: MyCalendarEventTimesChangedEvent): void {
     event.start = newStart;
     event.end = newEnd;
     this.handleEvent('Dropped or resized', event);

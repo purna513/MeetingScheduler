@@ -10,6 +10,23 @@ import { UserManagementService } from 'src/app/user-management.service';
 import { ToastrService } from 'ngx-toastr';
 import { MeetupappSocketService } from 'src/app/meetupapp-socket.service';
 
+interface MyEvent extends CalendarEvent {
+  meetingStartDate: string;
+  meetingEndDate: string;
+  hostId: string;
+  meetingTopic: string;
+  hostName: string;
+  meetingDescription: string;
+  participantName: string;
+  meetingPlace : string;
+
+}
+
+interface MyCalendarEventTimesChangedEvent extends CalendarEventTimesChangedEvent{
+
+  event: MyEvent;
+}
+
 const colors: any = {
   red: {
     primary: '#ad2121',
@@ -43,19 +60,19 @@ export class UserViewComponent implements OnInit {
 
   modalData: {
     action: string;
-    event: CalendarEvent;
+    event: MyEvent;
   };
 
   actions: CalendarEventAction[] = [
     {
       label: '<i class="fa fa-fw fa-pencil"></i>',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
+      onClick: ({ event }: { event: MyEvent }): void => {
         this.handleEvent('Edited', event);
       }
     },
     {
       label: '<i class="fa fa-fw fa-times"></i>',
-      onClick: ({ event }: { event: CalendarEvent }): void => {
+      onClick: ({ event }: { event: MyEvent }): void => {
         this.events = this.events.filter(iEvent => iEvent !== event);
         this.handleEvent('Deleted', event);
       }
@@ -64,7 +81,7 @@ export class UserViewComponent implements OnInit {
 
   refresh: Subject<any> = new Subject();
 
-  public events: CalendarEvent[] = [];
+  public events: MyEvent[] = [];
   public meetings: any = [];
   public activeDayIsOpen: boolean = true;
   public currentUserId: any;
@@ -144,7 +161,7 @@ export class UserViewComponent implements OnInit {
   }//end getUserAllMeetingFunction
 
 
-  dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {
+  dayClicked({ date, events }: { date: Date; events: MyEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
       if (
         (isSameDay(this.viewDate, date) && this.activeDayIsOpen === true) ||
@@ -162,7 +179,7 @@ export class UserViewComponent implements OnInit {
     event,
     newStart,
     newEnd
-  }: CalendarEventTimesChangedEvent): void {
+  }: MyCalendarEventTimesChangedEvent): void {
     this.events = this.events.map(iEvent => {
       if (iEvent === event) {
         return {
@@ -176,12 +193,12 @@ export class UserViewComponent implements OnInit {
     this.handleEvent('Dropped or resized', event);
   }
 
-  handleEvent(action: string, event: CalendarEvent): void {
+  handleEvent(action: string, event: MyEvent): void {
     this.modalData = { event, action };
     this.modal.open(this.modalContent, { size: 'lg' });
   }
 
-  deleteEvent(eventToDelete: CalendarEvent) {
+  deleteEvent(eventToDelete: MyEvent) {
     this.events = this.events.filter(event => event !== eventToDelete);
   }
 

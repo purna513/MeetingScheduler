@@ -1,7 +1,7 @@
 <div class="container-fluid">    
       <div class="row" id="topContainer">
-      <div class="col-sm-12 col-md-6 col-lg-3 ">
-        <span> Meet Up App- Admin Dashboard</span>
+      <div class="col-sm-12 col-md col-lg-3 ">
+        <h6> Meet Up App- Admin Dashboard</h6>
       </div>
       <div class="col-sm-12 col-md-6 col-lg-5">
         <div class="btn-group" role="group" >
@@ -37,7 +37,7 @@
               <li class="nav-item own-navbar">
                 <div class="" *ngFor="let user of allUsersData | filter:userName">
   
-                  <a (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email)" class="list-group-item list-group-item-action" *ngIf="user.userId != adminId">
+                  <a (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email)" class="list-group-item list-group-item-info   list-group-item-action" *ngIf="user.userId != adminId">
                     <span>{{user.firstName}}
                       {{user.lastName}}
                     </span>
@@ -278,7 +278,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form #updateMeetingForm="ngForm" (ngSubmit)="createBlog()">
+      <form #updateMeetingForm="ngForm">
       <div class="modal-body">
         
           <div class="row">
@@ -318,7 +318,7 @@
                 </div>  
                 <div class="col-md-5">
                     <label for="endTime" class="sr-only">End Time:</label>
-                    <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="endDate1" placeholder="End Date Time">
+                    <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="modalData.event.meetingEndDate" placeholder="End Date Time">
       
                     <span [owlDateTimeTrigger]="dt2">
                       <i class="fa fa-calendar"></i>
