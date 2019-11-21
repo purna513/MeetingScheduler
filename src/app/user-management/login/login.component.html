@@ -3,9 +3,8 @@
     <div id="loginId" style="margin-top: 2vh; margin-bottom: 2vh;" class="col-sm-12 col-md-8 col-lg-6 mx-auto">
         <div class="jumbotron">            
                 <div class="text-center">
-                    <div>
-                        <h4>Login to Schedule Meeting</h4>
-                    </div>
+                        <h4>MeetUp App</h4>
+                        <i class="fa fa-handshake-o fa-4x" aria-hidden="true"></i>
                 </div>
                 <br>
                 <form id="loginform" class="form-horizontal" role="form">
@@ -26,22 +25,21 @@
                                 <i class="fa fa-lock"></i>  
                             </span> 
                         </div>
-                        <input type="password" id="inputPassword" [(ngModel)]="password" (keydown)="loginUsingKeypress($event)" name="password" class="form-control"
+                        <input type="password" id="inputPassword" [(ngModel)]="password" name="password" class="form-control"
                             placeholder="Password" required>
                     </div>
-
- 
-
-                    <div style="margin-top:10px" class="form-group">
-                        <!-- Button -->
-
-                        <div class="col-sm-12 controls">
-                            <button id="btn-signin" type="button" class="btn btn-primary" (click)="signInFunction()">
-                                <i class="icon-hand-right"></i> Login Now</button>
-                
-                        </div>
-                    </div>
- 
+                    <div style="margin-top:10px" class="form-group text-center">              
+                            <div *ngIf="isLoading; else logInButton" class="col-md-12">
+                              <button  class="btn btn-primary">
+                                  <span class="spinner-border spinner-border-sm"></span>
+                                  Logging ....
+                                </button>                
+                            </div>
+                            <ng-template #logInButton class="col-md-12">
+                                <button id="btn-signup" type="button" class="btn btn-primary" (click)="signInFunction()">
+                                 <i class="icon-hand-right"></i> Log In Now</button>
+                            </ng-template>
+                      </div>                                
                     <a style="float:left" class="nav-link" [routerLink]="['/retrivePassword']">Retrive password?</a>
 
                 </form>        

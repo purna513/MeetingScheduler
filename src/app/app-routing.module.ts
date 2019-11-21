@@ -6,6 +6,8 @@ import { RetrivePasswordComponent } from './user-management/retrive-password/ret
 import { ResetPasswordComponent } from './user-management/reset-password/reset-password.component';
 import { UserViewComponent } from './user-slot-management/user-view/user-view.component';
 import { AdminViewComponent } from './user-slot-management/admin-view/admin-view.component';
+import { InternalServerErrorComponent } from './internal-server-error/internal-server-error.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
     {path: 'login',component: LoginComponent},
@@ -14,7 +16,11 @@ const routes: Routes = [
     {path: 'adminView',component: AdminViewComponent},
     {path: 'retrivePassword',component: RetrivePasswordComponent},
     {path :'resetPassword/:validationToken', component:ResetPasswordComponent},
+    
     { path: '', redirectTo: 'login', pathMatch: 'full' },
+    {path :'500', component:InternalServerErrorComponent},    
+    {path :'*',component:PageNotFoundComponent},
+    {path :'**',component:PageNotFoundComponent}
   ];
   
 

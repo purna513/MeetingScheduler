@@ -17,6 +17,8 @@ import {
  
 } from "angularx-social-login";
 import { UserSlotManagementModule } from './user-slot-management/user-slot-management.module';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { InternalServerErrorComponent } from './internal-server-error/internal-server-error.component';
 
 
 // Configs 
@@ -42,6 +44,8 @@ export function getAuthServiceConfigs() {
 @NgModule({
   declarations: [
     AppComponent,
+    PageNotFoundComponent,
+    InternalServerErrorComponent,
   ],
   imports: [
     BrowserModule,

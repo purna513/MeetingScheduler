@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
 
   public email: any;
   public password: any;
-
+  public isLoading: boolean =false;
   
 public signInFunction(): any {
 
@@ -32,62 +32,55 @@ public signInFunction(): any {
     this.toastr.warning("Password is required", "Warning!");
   }
   else {
+    this.isLoading = true;
     let data = {
       email: this.email,
       password: this.password,
     }
 
-    console.log(data)  
     this.userService.signIn(data)
       .subscribe((apiResponse) => {
 
         if (apiResponse.status == 200) {
-          this.toastr.success("Login Successfull", "Welcome to Lets Meet");
-          //console.log(apiResponse.data)
-          
+          this.toastr.success("Login Successfull", "Welcome to  MeetUp App");                
           Cookie.set('authToken', apiResponse.data.authToken);
           Cookie.set('receiverId', apiResponse.data.userDetails.userId);
           Cookie.set('receiverName', `${apiResponse.data.userDetails.firstName} ${apiResponse.data.userDetails.lastName}`);
           this.userService.setUserInfoInLocalStorage(apiResponse.data.userDetails);                    
           setTimeout(() => {
             console.log(apiResponse.data.userDetails.isAdmin)
-            if(apiResponse.data.userDetails.isAdmin == true){
+            if(apiResponse.data.userDetails.isAdmin == true){              
               this.router.navigate(['/adminView']);
-            }else{
+            }else{            
               this.router.navigate(['/userView']);
             }
 
-          }, 1000);//redirecting to Dashboard page
+          }, 1000);//Navigatiing to Dashboard page
 
         }
         else {
+          this.isLoading = false;
           this.toastr.error(apiResponse.message, "Error!");
         }
       },
         (error) => {
           
           if(error.status == 404){
+            this.isLoading = false;
             this.toastr.warning("Login Failed", "User Not Found!");
           }
           else if(error.status == 400){
+            this.isLoading = false;
             this.toastr.warning("Login Failed", "Wrong Password");
           }
           else{
+            this.isLoading = false;
             this.toastr.error("Some Error Occurred", "Error!");
-            //this.router.navigate(['/serverError']);
-
+            this.router.navigate(['/serverError']);
           }
             
         });//end calling signUpFunction
   }
 }//end signInFunction 
-public loginUsingKeypress: any = (event: any) => {
 
-  if (event.keyCode === 13) { // 13 is keycode of enter.
-
-    this.signInFunction();
-
-  }
-
-}
 }

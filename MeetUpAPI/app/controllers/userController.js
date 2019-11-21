@@ -256,10 +256,27 @@ let loginFunction = (req, res) => {
 
 // end of the login function 
 // end of the login function 
-
-let logout = (req, res) => {
-  
+/**
+ * function to logout user.
+ * auth params: userId.
+ */
+let signOff = (req, res) => {
+    AuthModel.findOneAndRemove({ userId: req.params.userId }, (err, result) => {
+        if (err) {
+            console.log(err)
+            logger.error(err.message, 'user Controller: logout', 10)
+            let apiResponse = response.generate(true, `error occurred: ${err.message}`, 500, null)
+            res.send(apiResponse)
+        } else if (check.isEmpty(result)) {
+            let apiResponse = response.generate(true, 'Already Logged Out or Invalid UserId', 404, null)
+            res.send(apiResponse)
+        } else {
+            let apiResponse = response.generate(false, 'Logged Out Successfully', 200, null)
+            res.send(apiResponse)
+        }
+    })
 } // end of the logout function.
+
 
 /* Function to generate recoveryPassword and sending recoveryPassword via email */
 /* params : email
@@ -411,6 +428,6 @@ module.exports = {
     loginFunction: loginFunction,
     getAllUser: getAllUser,
     retrivePasswordFunction: retrivePasswordFunction,    
-    logout: logout
+    signOff: signOff
 
 }// end exports

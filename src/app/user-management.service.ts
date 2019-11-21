@@ -92,6 +92,7 @@ export class UserManagementService {
 
   public logout(userId,authToken): Observable<any>{
 
+    console.log(userId)
     const params = new HttpParams()
       .set('authToken',authToken)
 

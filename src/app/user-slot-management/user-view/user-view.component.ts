@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import 'flatpickr/dist/flatpickr.css';
 import {ChangeDetectionStrategy, ViewChild, TemplateRef} from '@angular/core';
 import {startOfDay,endOfDay,subDays,addDays,endOfMonth,isSameDay,isSameMonth,addHours} from 'date-fns';
 import { Subject } from 'rxjs';
@@ -9,6 +8,7 @@ import { Cookie } from 'ng2-cookies/ng2-cookies';
 import { UserManagementService } from 'src/app/user-management.service';
 import { ToastrService } from 'ngx-toastr';
 import { MeetupappSocketService } from 'src/app/meetupapp-socket.service';
+import { Router } from '@angular/router';
 
 interface MyEvent extends CalendarEvent {
   meetingStartDate: string;
@@ -19,7 +19,6 @@ interface MyEvent extends CalendarEvent {
   meetingDescription: string;
   participantName: string;
   meetingPlace : string;
-
 }
 
 interface MyCalendarEventTimesChangedEvent extends CalendarEventTimesChangedEvent{
@@ -93,7 +92,8 @@ export class UserViewComponent implements OnInit {
 
   constructor(private modal: NgbModal, private userService : UserManagementService,
                 private toastr : ToastrService,
-                private meetupappSocketService:MeetupappSocketService) { }
+                private meetupappSocketService:MeetupappSocketService,
+                private router: Router) { }
 
   public titleName : any;
   ngOnInit() {
@@ -264,6 +264,46 @@ export class UserViewComponent implements OnInit {
         this.toastr.info("Update From Admin!",data.message);
       });
     }
+
+    public signOutFunction = () => {
+      
+      this.userService.logout(this.receiverId, this.authToken).subscribe(
+        (apiResponse) => {
+          if (apiResponse.status === 200) {
+            
+            Cookie.delete('authToken');//delete all the cookies
+            Cookie.delete('receiverId');
+            Cookie.delete('receiverName');
+            
+            localStorage.clear();
+            
+            this.meetupappSocketService.disconnectedSocket();//calling the method which emits the disconnect event.
+            this.meetupappSocketService.exitSocket();//this method will disconnect the socket from frontend and close the connection with the server.
+  
+  
+            setTimeout(() => {
+              this.router.navigate(['/login']);//redirects the user to login page.
+            }, 1000);//redirecting to Dashboard page
+  
+  
+          } else {
+            this.toastr.error(apiResponse.message, "Error!")
+            this.router.navigate(['/serverError']);//in case of error redirects to error page.
+          } // end condition
+        },
+        (err) => {
+          if (err.status == 404) {
+            this.toastr.warning("Logout Failed", "Already Logged Out or Invalid User");
+          }
+          else {
+          this.toastr.error("Some Error Occurred", "Error!");
+            this.router.navigate(['/serverError']);
+  
+          }
+        });
+  
+    }//end logout  
+  
 
 }
 

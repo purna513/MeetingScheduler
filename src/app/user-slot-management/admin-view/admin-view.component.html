@@ -1,5 +1,5 @@
 <div class="container-fluid">    
-      <div class="row" id="topContainer">
+      <!-- <div class="row" id="topContainer">
       <div class="col-sm-12 col-md col-lg-3 ">
         <h6> Meet Up App- Admin Dashboard</h6>
       </div>
@@ -15,7 +15,23 @@
           <button  type="button" class="btn btn-outline-info rounded" (click)="logoutFunction(adminId)"
           ><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</button>
       </div>    
-    </div>
+    </div> -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">MeetUp App</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <a class="navbar-brand" >User Dashboard</a>
+            <li class="nav-item">              
+              <a class="nav-link" href="logoutFunction(adminId)"
+          ><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
+            </li>                        
+          </ul>          
+        </div>
+      </nav>
+      
   
     <div class="row">  
       <div class="d-block d-sm-block d-md-none col-md-4 border border-info">

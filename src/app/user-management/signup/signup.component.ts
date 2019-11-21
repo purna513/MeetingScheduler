@@ -2,11 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { UserManagementService } from 'src/app/user-management.service';
-import {
-  AuthService,
-  GoogleLoginProvider,
-} from 'angularx-social-login';
-import { Cookie } from 'ng2-cookies/ng2-cookies';
 import countryList from '../../../assets/names.json';
 import codeList from '../../../assets/phone.json';
 @Component({
@@ -15,7 +10,7 @@ import codeList from '../../../assets/phone.json';
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
-
+  public isLoading : boolean = false;
   public title : any;
   public firstName: any;
   public lastName: any;
@@ -37,7 +32,7 @@ export class SignupComponent implements OnInit {
     public router: Router,
     private toastr: ToastrService,
     public userService: UserManagementService,
-    private socialAuthService: AuthService) { }
+    ) { }
 
   ngOnInit() {
     this.getCountries();
@@ -51,13 +46,7 @@ export class SignupComponent implements OnInit {
 
   public signupFunction(): any {
 
-    if (!this.firstName) {
-      this.toastr.warning("First Name is required", "Warning!");
-    }
-    else if (!this.lastName) {
-      this.toastr.warning("Last Name is required", "Warning!");
-    }
-    else if (!this.userName) {
+    if (!this.userName) {
       this.toastr.warning("User Name is required", "Warning!");
     }
     else if (!this.mobileNumber) {
@@ -71,7 +60,7 @@ export class SignupComponent implements OnInit {
       this.toastr.warning("Password is required", "Warning!");
     }
     else {
-
+      this.isLoading = true;
       let data = {
         firstName: this.firstName,
         lastName: this.lastName,
@@ -88,20 +77,27 @@ export class SignupComponent implements OnInit {
         .subscribe((apiResponse) => {
 
           if (apiResponse.status == 200) {
-            this.toastr.success("Please check your email", "Registered with Lets Meet");
+            this.toastr.success("Please check your email", "Registered with MeetUp App");
             setTimeout(() => {
+              this.isLoading = false;
               this.goToSignIn();
             }, 1000);//redirecting to signIn page
 
+          }else if(apiResponse.status == 500){
+            this.isLoading = false;
+            this.toastr.error(apiResponse.message, "Error!");
+            this.router.navigate(['/500']);
           }
           else {
+            this.isLoading = false;
             this.toastr.error(apiResponse.message, "Error!");
           }
         },
           (error) => {
-            this.toastr.error("Some Error Occurred", "Error!");
-            this.router.navigate(['/serverError']);
-          });//end calling signUpFunction
+            this.isLoading = false;
+            this.toastr.error("Some Internal Error Occurred", "Error!");
+            this.router.navigate(['/500']);
+          });
     }
   }//end signUp function
   
@@ -147,41 +143,6 @@ export class SignupComponent implements OnInit {
       
   }//end getCountries
 
-  public socialSignIn() {
-     let socialPlatformProvider;
-    socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
-    
-    this.socialAuthService.signIn(socialPlatformProvider).then(
-      (userData) => {
-        if (userData.email && userData.name) {
-          this.email = userData.email;
-          this.firstName = userData.name.split(' ')[0];
-          this.lastName = userData.name.split(' ')[1];
-          let data = {
-            firstName: this.firstName.toLowerCase(),
-            lastName: this.lastName.toLowerCase(),
-            type: userData.provider,
-            email: this.email,
-          }
-          console.log(data);
-          this.userService.socialSignupFunction(data).subscribe((apiResponse)=>{
-            if(apiResponse.status===200){
-              Cookie.set('authToken',apiResponse.data.authToken);
-              this.userService.setUserInfoInLocalStorage(apiResponse.data.userData)
-            }else if(apiResponse.status===404){
-              this.toastr.error("Email or Password wrong","Wrong credentials");
-            }else{
-              this.toastr.error(`${apiResponse.message}`,"dismiss");
-            }
-
-          },(err)=>{
-            this.toastr.error("some error occure please check console");
-          }
-          )
-        }
-      });
-
-  } //end of social sign up
-
+  
 
 }
