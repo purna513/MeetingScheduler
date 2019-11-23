@@ -1,6 +1,6 @@
 
 <div class="container">
-    <div id="loginId" style="margin-top: 2vh; margin-bottom: 2vh;" class="col-sm-12 col-md-8 col-lg-6 mx-auto">
+    <div id="loginId" class="col-sm-12 col-md-8 col-lg-6 mx-auto">
         <div class="jumbotron">            
                 <div class="text-center">
                         <h4>MeetUp App</h4>
@@ -39,10 +39,19 @@
                                 <button id="btn-signup" type="button" class="btn btn-primary" (click)="signInFunction()">
                                  <i class="icon-hand-right"></i> Log In Now</button>
                             </ng-template>
-                      </div>                                
-                    <a style="float:left" class="nav-link" [routerLink]="['/retrivePassword']">Retrive password?</a>
-
+                      </div>              
+                    <div class="row">
+                        <div class="col">
+                                <a style="float:left" class="nav-link" [routerLink]="['/retrivePassword']">Retrive password?</a>
+                        </div>                        
+                    </div>                  
+                    <div class="row">                            
+                            <div class="col">
+                                    <a style="float:left" class="nav-link" [routerLink]="['/signup']">New user?</a>
+                            </div>
+                        </div>      
+                    
                 </form>        
-                    </div>
+        </div>
     </div>
 </div>

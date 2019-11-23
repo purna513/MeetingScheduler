@@ -1,13 +1,21 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-light " style="background-color: #e3f2fd">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#userViewToggle" aria-controls="userViewToggle"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span> 
+    </button>
+  
+    <span class="navbar-brand text-primary"><strong>MeetUp App</strong></span>
+    <div class="collapse navbar-collapse" id="userViewToggle">
+        <span class="navbar-brand mb-0 text-center text-primary">Welcome {{this.currentUserName}}</span>
+    </div>
+    <div class="nav navbar-nav navbar-right">
+        <button class="btn btn-link" style="float: right;" (click)="signOutFunction()" class="btn btn-outline-info rounded">              
+          <i class="fa fa-sign-out" aria-hidden="true"></i>Logout</button>
+    </div>  
+  </nav>
+  <br>
+
 <div class="container">
-    <div class="container" id="topContainer">
-        <div class="col-sm-12 col-md col-lg-3 ">
-          <h6> user Dashboard</h6>
-        </div>        
-        <div class="col">        
-            <button  type="button" style="float: right;" class="btn btn-outline-info rounded" (click)="signOutFunction()"
-            ><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</button>
-        </div>    
-      </div>
     
 <div class="row text-center">
     <div class="col-md-4">
@@ -100,14 +108,10 @@
     >
     </mwl-calendar-day-view>
   </div>
-  
-  <!-- Everything you see below is just for the demo, you don't need to include it in your app -->
-  
-  <br /><br /><br />
-  
+
   <ng-template #modalContent let-close="close">
     <div class="modal-header">
-      <h5 class="modal-title">Event action occurred</h5>
+      <h5 class="modal-title"><strong>Meeting Schedule</strong></h5>
       <button type="button" class="close" (click)="close()">
         <span aria-hidden="true">&times;</span>
       </button>

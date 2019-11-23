@@ -1,59 +1,50 @@
-<div class="container-fluid">    
-      <!-- <div class="row" id="topContainer">
-      <div class="col-sm-12 col-md col-lg-3 ">
-        <h6> Meet Up App- Admin Dashboard</h6>
-      </div>
-      <div class="col-sm-12 col-md-6 col-lg-5">
-        <div class="btn-group" role="group" >
-          <button  type="button" class="btn btn-outline-info rounded" (click)="getAdminMeetings()"
-          ><i class="fa fa-user"></i>
-            View my Meetings
-          </button>          
-        </div>
-      </div>  
-      <div class="col">        
-          <button  type="button" class="btn btn-outline-info rounded" (click)="logoutFunction(adminId)"
-          ><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</button>
-      </div>    
-    </div> -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">MeetUp App</a>
+<div class="container-fluid">      
+  <div class="row">
+    <div class="col-md-12 col-lg-12">     
+      <nav class="navbar sticky-top navbar-expand-lg navbar-light " style="background-color: #e3f2fd">
+        <a class="navbar-brand text-primary">MeetUp App</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>      
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          
+            
+            <a class="navbar-brand text-primary" > <strong>Admin Dashboard</strong></a>
+              
           <ul class="navbar-nav mr-auto">
-            <a class="navbar-brand" >User Dashboard</a>
             <li class="nav-item">              
-              <a class="nav-link" href="logoutFunction(adminId)"
-          ><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
-            </li>                        
-          </ul>          
+                <button class="btn btn-link" (click)="getAdminMeetings()"
+            ><i class="fa fa-clock-o" aria-hidden="true"></i> My Schedule</button>
+              </li>                                   
+          </ul> 
+          <div class="nav navbar-nav navbar-right ">
+              <button class="btn btn-link" (click)="signOutFunction()"
+                 ><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</button>
+          </div>         
         </div>
       </nav>
-      
-  
+    </div>
+  </div>   
     <div class="row">  
-      <div class="d-block d-sm-block d-md-none col-md-4 border border-info">
-        <!--testing-->  
+      <div class="d-block d-sm-block d-md-none col-md-4 col-lg-4 border border-info">      
         <nav class="navbar navbar-expand-lg navbar-light " style="background-color: #f5f5f5">
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarAdminToggler"
             aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>  
           <a class="navbar-brand h1">Users of Lets Meet</a>
         </nav>  
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <div class="collapse navbar-collapse" id="navbarAdminToggler">
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
               <li class="nav-item own-navbar">
-                <input type="text" id="inputUserName" name="userName" [(ngModel)]="userName" class="form-control"
+                <input type="text" id="inputUserName" name="userNameSearch" [(ngModel)]="userNameSearch" class="form-control"
                   placeholder="Search For User Name">
               </li>
-  
+              <br>
               <li class="nav-item own-navbar">
-                <div class="" *ngFor="let user of allUsersData | filter:userName">
+                <div class="" *ngFor="let user of allUsersData | filter:userNameSearch">
   
-                  <a (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email)" class="list-group-item list-group-item-info   list-group-item-action" *ngIf="user.userId != adminId">
+                  <a (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email, user.status)" class="list-group-item list-group-item-info   list-group-item-action" *ngIf="user.userId != adminId">
                     <span>{{user.firstName}}
                       {{user.lastName}}
                     </span>
@@ -67,19 +58,13 @@
   
             </ul>
           </div>
-  
-        <!--testing end-->
-  
       </div>   
-      <div class="d-none d-sm-none d-md-block col-md-4  border border-info" style="margin-bottom: 7vh;">
-          <br>
-          <h5 class="btn btn-outline-info"> Users of Lets Meet </h5>
-          <input type="text" id="inputUserName" name="userName" [(ngModel)]="userName" class="form-control" placeholder="Search For User Name">
-          <br>    
+      <div class="d-none d-sm-none d-md-block col-md-4 col-lg-4 border border-info" style="margin-bottom: 7vh;">          
+          <h5 class="btn btn-outline-info">  MeetUp App Users </h5>
+          <input type="text" id="inputUserName" name="userNameSearch" [(ngModel)]="userNameSearch" class="form-control" placeholder="Search For User Name">    
           <div class="people-list">
-              <div class="list-group list" *ngFor="let user of allUsersData | filter:userName">
-            
-                  <a  (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email)" class="list-group-item list-group-item-action list-group-item-info" *ngIf="user.userId != adminId">                                                    
+              <div class="list-group list" *ngFor="let user of allUsersData | filter:userNameSearch">            
+                  <a  (click)="getUserMeetings(user.userId,user.firstName + ' ' +user.lastName, user.email,user.status)" class="list-group-item list-group-item-action list-group-item-info" *ngIf="user.userId != adminId">                                                    
                     <span>{{user.firstName}}
                       {{user.lastName}}
                     </span>                    
@@ -90,11 +75,9 @@
           </div>    
       </div>
   
-      <div class="col-sm-12 col-md-8 border border-info" style="margin-bottom: 7vh;"> 
-
-        <h6 *ngIf="isAdmin" class="text-center">Welcome Admin Check your calendar for Meetings associated with all participants </h6>
-        <h6 *ngIf="isUser" class="text-center">Meetings associated with <span class="text-primary"> {{this.currentUserName}}</span></h6>
-        
+      <div class="col-sm-12 col-md-8 col-lg-8 border border-info"> 
+        <h6 *ngIf="isAdmin" class="text-center">Welcome {{userName}} Check your calendar for Meetings associated with all participants </h6>
+        <h6 *ngIf="isUser" class="text-center">Meetings associated with <span class="text-primary"> {{this.currentUserName}}</span></h6>        
         <div class="row">
           <div class="col-md-3">
             <div class="btn-group btn-group-sm" >
@@ -197,13 +180,13 @@
     </button>
     <div class="clearfix"></div>
   </h6>
-  
-      </div>
-    </div>
   </div>
+</div>
+</div>
   <ng-template #modalAddMeeting let-close="close">
       <div class="modal-header">
-        <h5 class="modal-title">Add New Meeting</h5>
+        <h5 class="modal-title">Add New Meeting with</h5><br>
+          <span style="font-family: cursive;">{{currentUserName}}</span>
         <button type="button" class="close" (click)="close()">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -289,29 +272,25 @@
     <!-- Update Meeting Modal -->
     <ng-template #modalEditMeeting let-close="close">
       <div class="modal-header">
-        <h5 class="modal-title">Add New Meeting</h5>
+        <h5 class="modal-title">Update  Meeting with {{modalData.event.participantName}} </h5>
         <button type="button" class="close" (click)="close()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <form #updateMeetingForm="ngForm">
-      <div class="modal-body">
-        
+      <div class="modal-body">        
           <div class="row">
-            <div class="col-md-5">   
-                <label>Meeting Agenda</label>         
-                <input type="text" #meetingAgenda="ngModel" id="inputTitle" name="title" [(ngModel)]="modalData.event.title" class="form-control"
-                placeholder="Meeting Title" required autofocus>
+              <div class="col-md-5">
+                  <label>End date & Time:</label>
+                  <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="modalData.event.meetingEndDate" placeholder="End Date Time">
     
-              <div [hidden]="meetingAgenda.pristine || meetingAgenda.valid" class="alert alert-danger">
-                <div *ngIf="meetingAgenda.errors?.required">
-                  ** Meeting  Title is required!
-                </div>
-              </div>
-    
-            </div>
-            <div class="col-md-5">
-                <label for="startTime" class="sr-only">Start Time:</label>
+                  <span [owlDateTimeTrigger]="dt2">
+                    <i class="fa fa-calendar"></i>
+                  </span>
+                  <owl-date-time #dt2></owl-date-time>
+              </div>  
+              <div class="col-md-5 col-lg-5 owlStyle">
+                <label>Start Date & Time:</label>
                 <input [owlDateTime]="dt1" name="startDate1" [(ngModel)]="modalData.event.meetingStartDate" placeholder="Start Date Time">
                 <span [owlDateTimeTrigger]="dt1">
                   <i class="fa fa-calendar"></i>
@@ -321,6 +300,19 @@
           </div>
           
           <div class="row"> 
+              <div class="col-md-5 col-lg-5">   
+                  <label>Meeting Agenda</label>         
+                  <input type="text" #meetingAgenda="ngModel" id="inputTitle" name="title" [(ngModel)]="modalData.event.title" class="form-control"
+                  placeholder="Meeting Title" required autofocus>
+      
+                <div [hidden]="meetingAgenda.pristine || meetingAgenda.valid" class="alert alert-danger">
+                  <div *ngIf="meetingAgenda.errors?.required">
+                    ** Meeting  Title is required!
+                  </div>
+                </div>
+      
+              </div>
+  
               <div class="col-md-5">
                   <label>Meeting Description</label>
                   <textarea type="text" #agenda="ngModel" id="inputDescription" name="description" [(ngModel)]="modalData.event.meetingDescription"
@@ -332,15 +324,7 @@
                         </div>
                       </div>
                 </div>  
-                <div class="col-md-5">
-                    <label for="endTime" class="sr-only">End Time:</label>
-                    <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="modalData.event.meetingEndDate" placeholder="End Date Time">
-      
-                    <span [owlDateTimeTrigger]="dt2">
-                      <i class="fa fa-calendar"></i>
-                    </span>
-                    <owl-date-time #dt2></owl-date-time>
-                </div>         
+                       
           </div>
           
         
@@ -358,16 +342,10 @@
             </div>
           </div>
         </div>     
-      </div>  
-      
-      <div class="row">
-          <div class="col-md">
-            <span>Meeting hosted by : {{adminName}}</span>
-          </div>
-        </div>
-
+      </div>
       <div class="modal-footer">
-        <button type="button"[disabled]="!updateMeetingForm.form.valid" class="btn btn-outline-secondary" (click)="updateMeetingFunction(modalData.event)">
+        <h6 style="float: left;">Meeting hosted by : {{adminName}}</h6>
+        <button type="button"[disabled]="!updateMeetingForm.form.valid" class="btn btn-outline-success" (click)="updateMeetingFunction(modalData.event)">
           update Meeting
         </button>
       </div>

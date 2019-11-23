@@ -111,14 +111,12 @@ let signUpFunction = (req, res) => {
 */
 // start of login function 
 let loginFunction = (req, res) => {
-    let findUser = () => {
-        console.log("findUser");
+    let findUser = () => {        
         return new Promise((resolve, reject) => {
             if (req.body.email) {                
                 UserModel.findOne({ email: req.body.email}, (err, userDetails) => {
                     /* handle the error here if the User is not found */
-                    if (err) {
-                        console.log(err)
+                    if (err) {                        
                         logger.error('Failed To Retrieve User Data', 'userController: findUser()', 10)
                         /* generate the error message and the api response message here */
                         let apiResponse = response.generate(true, 'Failed To Find User Details', 500, null)

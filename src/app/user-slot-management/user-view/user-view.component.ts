@@ -62,22 +62,6 @@ export class UserViewComponent implements OnInit {
     event: MyEvent;
   };
 
-  actions: CalendarEventAction[] = [
-    {
-      label: '<i class="fa fa-fw fa-pencil"></i>',
-      onClick: ({ event }: { event: MyEvent }): void => {
-        this.handleEvent('Edited', event);
-      }
-    },
-    {
-      label: '<i class="fa fa-fw fa-times"></i>',
-      onClick: ({ event }: { event: MyEvent }): void => {
-        this.events = this.events.filter(iEvent => iEvent !== event);
-        this.handleEvent('Deleted', event);
-      }
-    }
-  ];
-
   refresh: Subject<any> = new Subject();
 
   public events: MyEvent[] = [];
@@ -90,9 +74,9 @@ export class UserViewComponent implements OnInit {
   public receiverId: string;
   public gentleReminder: Boolean = true;
 
-  constructor(private modal: NgbModal, private userService : UserManagementService,
-                private toastr : ToastrService,
-                private meetupappSocketService:MeetupappSocketService,
+  constructor(private modal: NgbModal,private meetupappSocketService:MeetupappSocketService,
+              private userService : UserManagementService,
+                private toastr : ToastrService,                
                 private router: Router) { }
 
   public titleName : any;
@@ -103,17 +87,14 @@ export class UserViewComponent implements OnInit {
     this.currentUserId = Cookie.get('receiverId');
     this.currentUserName = Cookie.get('receiverName');
     this.receiverId = Cookie.get('receiverId');
-    this.userInfo = this.userService.getUserInfoFromLocalStorage();
-    
-    this.verifyUserConfirmation()
+    this.verifyUserConfirmation();
+    this.userInfo = this.userService.getUserInfoFromLocalStorage();    
     this.authErrorFunction(); 
     this.getUserAllMeetingFunction();
     this.getUpdatesFromAdmin();
-    this.getUserAllMeetingFunction();   
-    
     setInterval(() => {
-      this.eventReminder();// function to send the reminder to the user
-    }, 5000); //will check for every 5 seconds
+      this.eventReminder();
+    }, 5000); //Meeting Remainder for user for every 5 seconds
 
 
   }
@@ -129,7 +110,8 @@ export class UserViewComponent implements OnInit {
             meetingEvent.start = new Date(meetingEvent.meetingStartDate);
             meetingEvent.end = new Date(meetingEvent.meetingEndDate);
             meetingEvent.color = colors.green;            
-            meetingEvent.remindMe = true            
+            meetingEvent.remindMe = true;
+            //start = new Date(meetingEvent.meetingStartDate);
           }          
           this.events = this.meetings;
           this.refresh.next();
@@ -147,14 +129,14 @@ export class UserViewComponent implements OnInit {
           }
           else {
             this.toastr.error("Some Error Occurred", "Error!");
-           // this.router.navigate(['/serverError']);
+            this.router.navigate(['/500']);
           }
         }//end error
-      );//end appservice.getuserallmeeting
+      );
     }//end if
     else {
       this.toastr.info("Missing Authorization Key", "Please login again");
-     // this.router.navigate(['/user/login']);
+      this.router.navigate(['/login']);
 
     }
 
@@ -214,8 +196,10 @@ export class UserViewComponent implements OnInit {
 
     //listened
     public verifyUserConfirmation: any = () => {
+      console.log("2. verify user Confirmation called in user view comp");
       this.meetupappSocketService.verifyUser()
         .subscribe(() => {
+          console.log("Setting User");
           this.meetupappSocketService.setUser(this.authToken);//in reply to verify user emitting set-user event with authToken as parameter.
   
         });//end subscribe
@@ -225,10 +209,7 @@ export class UserViewComponent implements OnInit {
       
       this.meetupappSocketService.listenAuthError()
         .subscribe((data) => {
-          console.log(data)
-
-        
-  
+          console.log(data);  
         });//end subscribe
     }//end authErrorFunction
 
@@ -236,7 +217,6 @@ export class UserViewComponent implements OnInit {
       let currentTime = new Date().getTime();
       
       for (let meetingEvent of this.meetings) {
-  console.log(new Date(meetingEvent.start).toLocaleString());
         if (isSameDay(new Date(), meetingEvent.start) && new Date(meetingEvent.start).getTime() - currentTime <= 60000
           && new Date(meetingEvent.start).getTime() > currentTime) {
           if (meetingEvent.remindMe && this.gentleReminder) {
@@ -258,7 +238,7 @@ export class UserViewComponent implements OnInit {
   
   
     public getUpdatesFromAdmin= () =>{
-
+      console.log("Hi updates from admin")
       this.meetupappSocketService.getUpdatesFromAdmin(this.receiverId).subscribe((data) =>{//getting message from admin.
         this.getUserAllMeetingFunction();
         this.toastr.info("Update From Admin!",data.message);
@@ -288,7 +268,7 @@ export class UserViewComponent implements OnInit {
   
           } else {
             this.toastr.error(apiResponse.message, "Error!")
-            this.router.navigate(['/serverError']);//in case of error redirects to error page.
+            this.router.navigate(['/500']);//in case of error redirects to error page.
           } // end condition
         },
         (err) => {
@@ -297,7 +277,7 @@ export class UserViewComponent implements OnInit {
           }
           else {
           this.toastr.error("Some Error Occurred", "Error!");
-            this.router.navigate(['/serverError']);
+            this.router.navigate(['/500']);
   
           }
         });

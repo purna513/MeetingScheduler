@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core';
-
-
 //Added for Http and Observables
 import { HttpClient, HttpClientModule, HttpErrorResponse, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
+import { Observable } from 'rxjs'; 
 import * as io from 'socket.io-client';
 @Injectable({
   providedIn: 'root'
@@ -12,25 +9,26 @@ import * as io from 'socket.io-client';
 export class MeetupappSocketService {
   public baseUrl = "http://localhost:3000";
   public socket;
-
   constructor(private _http: HttpClient) {
-    //console.log("SocketService is called");
-    //handshake is happening
+    console.log("Socket service intialized");
     this.socket = io(this.baseUrl);
-
   }
 
     //events that has to be listen
     public verifyUser = () => {
       return Observable.create((observer) => {
+        console.log("Verifying user")
         this.socket.on('verifyUser', (data) => {
           observer.next(data);
         });//On method
       });//end observable
+      
     }//end verifyUser
   
     public onlineUserList = () => {
+      console.log("From socket service")
       return Observable.create((observer) => {
+        console.log("22 one");
         this.socket.on('online-user-list', (userList) => {
           observer.next(userList);
           console.log(userList);

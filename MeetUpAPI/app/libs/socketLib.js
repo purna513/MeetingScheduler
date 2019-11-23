@@ -19,10 +19,10 @@ let setServer = (server) => {
         // code to verify the user and make him online
 
         socket.on('set-user', (authToken) => {
-
             console.log("set-user called")
             tokenLib.verifyClaimWithoutSecret(authToken, (err, user) => {
                 if (err) {
+                    console.log("From verify without claim");
                     socket.emit('auth-error', { status: 500, error: 'Please provide correct auth token' })
                 }
                 else {
@@ -37,15 +37,12 @@ let setServer = (server) => {
 
                     let userObj = {userId:currentUser.userId,fullName:fullName}
                     allOnlineUsers.push(userObj)
-                    console.log(allOnlineUsers)
-                    
+                    console.log(allOnlineUsers)                    
                     socket.broadcast.emit('online-user-list', allOnlineUsers);
-
                 }
             })
 
         }) // end of listening set-user event
-
 
         socket.on('disconnect', () => {
             // disconnect the user from socket
@@ -60,7 +57,6 @@ let setServer = (server) => {
             socket.broadcast.emit('online-user-list', allOnlineUsers);            
 
         }) // end of on disconnect
-
 
         socket.on('notify-updates', (data) => {
             console.log("socket notify-updates called")

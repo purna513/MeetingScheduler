@@ -76,7 +76,7 @@ export class AdminViewComponent implements OnInit {
 
   refresh: Subject<any> = new Subject();
   activeDayIsOpen: boolean = false;
-
+  public userNameSearch : any;
   public selectedUser: any;
   public allUsers: any[];
   public allUsersData: any[];
@@ -100,11 +100,12 @@ export class AdminViewComponent implements OnInit {
   public currentUserId: any;
   public currentUserName: any;
   public event: any;
-  public userName;
+  public userName : any;
   public isUpdate: Boolean = false;
   public currentUserEmail: any;
   public isAdmin: Boolean = true;
   public isUser: Boolean = false;
+  public currentUserStatus: any;
   constructor(
     public userService: UserManagementService,
     public meetupappSocketService: MeetupappSocketService,
@@ -123,17 +124,23 @@ export class AdminViewComponent implements OnInit {
     this.authToken = Cookie.get('authToken');
     this.currentUserId = Cookie.get('receiverId');
     this.currentUserName = Cookie.get('receiverName');
-    this.userInfo = this.userService.getUserInfoFromLocalStorage();    
+    this.userInfo = this.userService.getUserInfoFromLocalStorage();  
+    this.userName = this.userInfo.userName;  
     this.adminId = Cookie.get('receiverId');    
     this.adminName = Cookie.get('receiverName');
     this.verifyUserConfirmation();
+    this.getOnlineUserList();
     this.getAllUsers();
     this.getUserAllMeetingFunction();
+    //  setTimeout(()=>{
+    //    this.getOnlineUserList();
+    //  },9000)
+    
     this.authErrorFunction()        
 
      setInterval(() => {
-       this.eventReminder();// function to remind to the Admin
-     }, 5000); //will check for every 5 seconds
+       this.eventReminder();
+     }, 5000); //Reminds admin for every 5 seconds
 
   }
 
@@ -175,7 +182,6 @@ export class AdminViewComponent implements OnInit {
     }
 
     else if (action === 'Deleted') {
-       console.log(action === 'Deleted')
 
       this.modalData = { event, action };
       this.modal.open(this.modalDeleteMeeting, { size: 'sm' });
@@ -221,7 +227,7 @@ export class AdminViewComponent implements OnInit {
       }//end if
       else if(currentTime > new Date(meetingEvent.start).getTime() && 
       new Date(currentTime - meetingEvent.start).getTime()  < 10000){
-        this.toastr.info(`Meeting ${meetingEvent.meetingTopic} Started!`, `Gentle Reminder`);
+        this.toastr.info(`Meeting ${meetingEvent.meetingTopic} Started!`, `Reminder`);
       }  
     }
 
@@ -230,10 +236,12 @@ export class AdminViewComponent implements OnInit {
 
   /* Data base functions */
 
-  public getUserMeetings(userId,userName,email): any { //get appointments of selectd user ; 
+  public getUserMeetings(userId,userName,email,status): any { //get appointments of selectd user ; 
     this.currentUserId = userId
     this.currentUserName = userName;
     this.currentUserEmail = email;
+    this.currentUserStatus =status;
+    console.log(status+ email);
     this.isAdmin = false;
     this.isUser = true;    
     this.getUserAllMeetingFunction()
@@ -252,8 +260,7 @@ export class AdminViewComponent implements OnInit {
     if (this.authToken != null) {
       this.userService.getUsers(this.authToken).subscribe((apiResponse) => {
         if (apiResponse.status == 200) {
-          this.allUsersData = apiResponse.data;
-          this.getOnlineUserList();          
+          this.allUsersData = apiResponse.data;        
           this.toastr.info("Updated", "All users listed");
         }
         else {
@@ -262,13 +269,13 @@ export class AdminViewComponent implements OnInit {
       },
         (error) => {
           this.toastr.error('Server error occured', "Error!");
-          this.router.navigate(['/serverError']);
+          this.router.navigate(['/500']);
         }//end error
       );//end getusers
     }//end if
     else {
       this.toastr.info('Missing Authorization key', "Please login again");
-      this.router.navigate(['/user/login']);
+      this.router.navigate(['/login']);
 
     }//end else
 
@@ -282,19 +289,33 @@ export class AdminViewComponent implements OnInit {
     if (this.currentUserId != null && this.authToken != null) {      
       this.userService.getUserAllMeeting(this.currentUserId, this.authToken).subscribe((apiResponse) => {
         if (apiResponse.status == 200) {
-          this.meetings = apiResponse.data;
-          console.log(this.meetings);
+          this.meetings = apiResponse.data;        
           for (let meetingEvent of this.meetings) {      
             meetingEvent.title = meetingEvent.meetingTopic;
             meetingEvent.start = new Date(meetingEvent.meetingStartDate);
             meetingEvent.end = new Date(meetingEvent.meetingEndDate);
             meetingEvent.color = colors.green;
             meetingEvent.actions = this.actions;
-            meetingEvent.remindMe = true            
-          }          
+            meetingEvent.remindMe = true                  
+          } 
+
           this.events = this.meetings;
-          this.refresh.next();
-          this.toastr.info("Calendar Updated", `Meetings Found!`);          
+          this.getOnlineUserList();
+          // for(let i=0;i<this.events.length;i++){
+          //   if((this.meetings[i] .meetingStartDate)> this.events[i].start && eventStartDay < events[i].end){
+          //     return true;
+          // }
+          // //end-time in between any of the events
+          // if(eventEndDay > events[i].start && eventEndDay < events[i].end){
+          //     return true;
+          // }
+          // //any of the events in between/on the start-time and end-time
+          // if(eventStartDay <= events[i].start && eventEndDay >= events[i].end){
+          //     return true;
+          // }
+          // }          
+         // this.refresh.next();
+          this.toastr.info("Updated Calender", `Meetings Found!`);          
         }
         else {
           this.toastr.error(apiResponse.message, "Error!");
@@ -303,19 +324,19 @@ export class AdminViewComponent implements OnInit {
       },
         (error) => {
           if (error.status == 400) {
-            this.toastr.warning("Calendar Failed to Update", "Either user or Meeting not found");
+            this.toastr.warning("Calendar Not able to Update", "Either user or Meeting not found");
             this.events = []
           }
           else {
             this.toastr.error("Some Error Occurred", "Error!");
-            this.router.navigate(['/serverError']);
+            this.router.navigate(['/500']);
           }
         }//end error
       );//end appservice.getuserallmeeting
     }//end if
     else {
       this.toastr.info("Missing Authorization Key", "Please login again");
-     // this.router.navigate(['/user/login']);
+      this.router.navigate(['/login']);
 
     }
 
@@ -323,19 +344,22 @@ export class AdminViewComponent implements OnInit {
 
 
   public deleteMeetingFunction(meeting,isDeleteMeeting): any {
-  
+  if(isDeleteMeeting==true){
+    console.log()
     this.userService.deleteMeeting(meeting.meetingId, this.authToken)
       .subscribe((apiResponse) => {
 
         if (apiResponse.status == 200) {
           this.toastr.success("Deleted the Meeting", "Successfull!");
           this.modal.dismissAll();
-          let dataForNotify = {
-            message: `Hi, ${this.receiverName} has canceled the meeting - ${meeting.meetingTopic}. Please Check your Calendar/Email`,
+          let notificationData = {
+            message: `Hi, ${this.adminName} has canceled the meeting - ${meeting.meetingTopic}. Please Check your Calendar/Email`,
             userId: meeting.participantId
           }
-
-          this.notifyUpdatesToUser(dataForNotify);
+          if(this.currentUserStatus=='online'){
+            this.notifyUpdatesToUser(notificationData);
+          }
+          
 
         }
         else {
@@ -349,11 +373,16 @@ export class AdminViewComponent implements OnInit {
           }
           else {
             this.toastr.error("Some Error Occurred", "Error!");
-            this.router.navigate(['/serverError']);
+            this.router.navigate(['/500']);
 
           }
 
         });//end calling deletemeeting
+  }else{
+    this.modal.dismissAll();
+    this.getUserAllMeetingFunction();
+  }
+    
 
   }//end deletemeeting
 
@@ -379,7 +408,7 @@ export class AdminViewComponent implements OnInit {
 
         } else {
           this.toastr.error(apiResponse.message, "Error!")
-          this.router.navigate(['/serverError']);//in case of error redirects to error page.
+          this.router.navigate(['/500']);//in case of error redirects to error page.
         } // end condition
       },
       (err) => {
@@ -388,7 +417,7 @@ export class AdminViewComponent implements OnInit {
         }
         else {
         this.toastr.error("Some Error Occurred", "Error!");
-          this.router.navigate(['/serverError']);
+          this.router.navigate(['/500']);
 
         }
       });
@@ -402,8 +431,8 @@ export class AdminViewComponent implements OnInit {
   public verifyUserConfirmation: any = () => {
     this.meetupappSocketService.verifyUser()
       .subscribe(() => {
-        //console.log("In verifys")
-        this.meetupappSocketService.setUser(this.authToken);//in reply to verify user emitting set-user event with authToken as parameter.
+
+        this.meetupappSocketService.setUser(this.authToken);
 
       });//end subscribe
   }//end verifyUserConfirmation
@@ -421,35 +450,31 @@ export class AdminViewComponent implements OnInit {
   public getOnlineUserList: any = () => {
     this.meetupappSocketService.onlineUserList()
       .subscribe((data) => {
-        console.log(data)
+
         this.onlineUserList = []
         for (let x in data) {
           let temp = data[x].userId ;
           this.onlineUserList.push(temp);
         } 
-        
-        
+        console.log(this.onlineUserList);
+        if(this.allUsersData != undefined){
         for (let user of this.allUsersData) {          
           if (this.onlineUserList.includes(user.userId)) {
-            console.log("from online userlist status");
             user.status = "online"
           } else {
             user.status = "offline"
           }
         }
-      
+      }
 
       });//end subscribe
-      console.log(this.allUsersData);
   }//end getOnlineUserList
 
 
   //emitted 
 
   public notifyUpdatesToUser: any = (data) => {
-   // data will be object with message and userId(recieverId)
    this.meetupappSocketService.notifyUpdates(data);
-
   }//end notifyUpdatesToUser
 
   /*
@@ -458,10 +483,10 @@ export class AdminViewComponent implements OnInit {
 
  public validateDate(startDate:any, endDate:any):boolean {//method to validate the the start and end date of meeting .
 
-  let start = new Date(startDate);
-  let end = new Date(endDate);
+  let startDateTime = new Date(startDate);
+  let endDateTime = new Date(endDate);
 
-  if(end < start){
+  if(endDateTime < startDateTime){
     return true;
   }
   else{
@@ -496,7 +521,7 @@ else if (this.validateDate(this.startDate1 ,this.endDate1)) {
   this.toastr.warning("End Date/Time cannot be before Start Date/Time", "Warning!");
 }
 else if (this.validateCurrentDate(this.startDate1) && this.validateCurrentDate(this.endDate1)) {
-  this.toastr.warning("Meeting can't be schedule in back date/time", "Warning!");
+  this.toastr.warning("Event can't be schedule in back date/time");
 }
 else {
   let data = {
@@ -512,24 +537,19 @@ else {
     authToken:this.authToken,
     emailAddress : this.currentUserEmail
   }
-  console.log(this.currentUserEmail+ "from add eee")
-
   this.userService.addMeeting(data).subscribe((apiResponse) => {
 
       if (apiResponse.status == 200) {
-        this.toastr.success("We emailed the final schedule to participant", "Meeting Finalized");
+        this.toastr.success("Mailed Event Details", "Meeting Finalized");
         this.modal.dismissAll();
         this.getUserAllMeetingFunction();
-        let dataForNotify = {
+        let notificationData = {
           message: `Hi, ${data.hostName} has Schedule a Meeting With You. Please check your Calendar/Email`,
           userId:data.participantId
         }
-
-        // this.notifyUpdatesToUser(dataForNotify);
-        // setTimeout(() => {
-        //   this.goToAdminDashboard();
-        // }, 1000);//redirecting to admin dashboard page
-
+        if(this.currentUserStatus== 'online'){
+          this.notifyUpdatesToUser(notificationData);
+        }
       }
       else {
         this.toastr.error(apiResponse.message, "Error!");
@@ -541,7 +561,7 @@ else {
         }
         else{
           this.toastr.error("Some Error Occurred", "Error!");
-          this.router.navigate(['/serverError']);
+          this.router.navigate(['/500']);
 
         }
     });//end calling addMeeting
@@ -586,14 +606,15 @@ public updateMeetingFunction( event: any): any {
             if (apiResponse.status == 200) {
               this.toastr.success("We emailed the updated schedule to participant", "Meeting Rescheduled");
               
-              
-  
-              let dataForNotify = {
-                message: `Hi, ${this.receiverName} has reschedule the Meeting - ${data.meetingTopic}. Please check your Calendar/Email`,
+              let notificationData = {
+                message: `Hi, ${this.adminName} has reschedule the Meeting - ${data.meetingTopic}. Please check your Calendar/Email`,
                 userId:this.currentUserId
               }
-    
-              this.notifyUpdatesToUser(dataForNotify);
+              console.log(this.currentUserStatus)
+              if(this.currentUserStatus=='online'){
+                console.log("Hi")
+                this.notifyUpdatesToUser(notificationData);
+              }
               
               setTimeout(() => {
                 this.modal.dismissAll();
@@ -607,6 +628,45 @@ public updateMeetingFunction( event: any): any {
   }
   }//end addMeeting function
   
+
+  public signOutFunction = () => {
+      
+    this.userService.logout(this.adminId, this.authToken).subscribe(
+      (apiResponse) => {
+        if (apiResponse.status === 200) {
+          
+          Cookie.delete('authToken');//delete all the cookies
+          Cookie.delete('receiverId');
+          Cookie.delete('receiverName');
+          
+          localStorage.clear();
+          
+          this.meetupappSocketService.disconnectedSocket();//calling the method which emits the disconnect event.
+          this.meetupappSocketService.exitSocket();//this method will disconnect the socket from frontend and close the connection with the server.
+
+
+          setTimeout(() => {
+            this.router.navigate(['/login']);//redirects the user to login page.
+          }, 1000);//redirecting to Dashboard page
+
+
+        } else {
+          this.toastr.error(apiResponse.message, "Error!")
+          this.router.navigate(['/500']);//in case of error redirects to error page.
+        } // end condition
+      },
+      (err) => {
+        if (err.status == 404) {
+          this.toastr.warning("Logout Failed", "Already Logged Out or Invalid User");
+        }
+        else {
+        this.toastr.error("Some Error Occurred", "Error!");
+          this.router.navigate(['/500']);
+
+        }
+      });
+
+  }//end logout  
 
 
 }

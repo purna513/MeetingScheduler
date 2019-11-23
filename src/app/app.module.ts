@@ -19,6 +19,7 @@ import {
 import { UserSlotManagementModule } from './user-slot-management/user-slot-management.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { InternalServerErrorComponent } from './internal-server-error/internal-server-error.component';
+import { MeetupappSocketService } from './meetupapp-socket.service';
 
 
 // Configs 
@@ -60,10 +61,7 @@ export function getAuthServiceConfigs() {
     ToastrModule.forRoot(),
   ],
   providers: [
-    {
-      provide: AuthServiceConfig,
-      useFactory: getAuthServiceConfigs
-    }
+    MeetupappSocketService
   ],  
   bootstrap: [AppComponent]
 })

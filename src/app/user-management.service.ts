@@ -11,7 +11,9 @@ export class UserManagementService {
 
   public baseUrl = "http://localhost:3000/api/v1";
  
-  constructor(private _http: HttpClient) { }
+  constructor(private _http: HttpClient) {
+    console.log("User service intialized");
+   }
 
 /* Start Functions for User Management */
 
@@ -63,20 +65,6 @@ export class UserManagementService {
     return this._http.put(`${this.baseUrl}/users/verifyEmail`, params);
   }//end verifyEmail
 
-  //signup 
-  public socialSignupFunction(data): Observable<any> {
-
-    const params = new HttpParams()
-      .set('firstName', data.firstName)
-      .set('lastName', data.lastName)
-      .set('type', data.type)
-      .set('email', data.email)
-    
-
-    return this._http.post(`${this.baseUrl}/users/socialSignup`, params);
-
-  } 
-  
   public getUsers(authToken): Observable<any> {
     console.log(`${authToken}`);
     return this._http.get(`${this.baseUrl}/users/view/all?authToken=${authToken}`);
