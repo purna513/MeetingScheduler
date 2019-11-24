@@ -7,9 +7,19 @@
     line-height: 1.42;
     border-radius: 15px;
   }
-
+  .cal-disabled {
+    background-color: #eee;
+    pointer-events: none;
+  }
+  
+  .cal-disabled .cal-day-number {
+    opacity: 0.1;
+  }
   .owl-dt-container-buttons {
     color: red;
+  }
+  .cal-day-selected {
+    background-color: pink !important;
   }
 /* 
   .row {
@@ -65,7 +75,9 @@
   #topContainer{
     background-color: ghostwhite;
   }
-  
+  .bg-pink {
+    background-color: hotpink !important;
+  }
   .people-list .list-group .list-group-item a:hover {
     background-color: rgb(19, 171, 231);
   }

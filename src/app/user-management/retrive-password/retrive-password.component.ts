@@ -25,7 +25,7 @@ export class RetrivePasswordComponent implements OnInit {
   public retrivePasswordFunction(): any {
 
     if (!this.email) {
-      this.toastr.warning("Email is required");
+      this.toastr.warning("Email is Mandaitory");
     }
     else {
       let data = {
@@ -36,7 +36,7 @@ export class RetrivePasswordComponent implements OnInit {
         .subscribe((apiResponse) => {
 
           if (apiResponse.status == 200) {
-            this.toastr.success("Password reset instructions sent successfully");
+            this.toastr.success("Reset instructions for password sent successfully");
 
           }
           else {
@@ -45,11 +45,11 @@ export class RetrivePasswordComponent implements OnInit {
         },
           (error) => {
             if(error.status == 404){
-              this.toastr.warning("Reset Password Failed", "Email Not Found!");
+              this.toastr.warning("Reset Password Unsucess", "Email Dosen't Exist!!");
             }
             else{
               this.toastr.error("Some Error Occurred", "Error!");
-              this.router.navigate(['/serverError']);
+              this.router.navigate(['/500']);
   
             }
               

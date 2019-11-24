@@ -1,14 +1,14 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarView } from 'angular-calendar';
+import { Component, OnInit, TemplateRef, ViewChild,ViewEncapsulation } from '@angular/core';
+import { CalendarEvent, CalendarEventAction, CalendarEventTimesChangedEvent, CalendarView, CalendarMonthViewDay, CalendarWeekViewBeforeRenderEvent, CalendarDayViewBeforeRenderEvent,CalendarEventTitleFormatter } from 'angular-calendar';
 import { Subject } from 'rxjs';
 import { UserManagementService } from 'src/app/user-management.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
-import { isSameMonth, isSameDay, startOfDay, endOfDay } from 'date-fns';
+import { isSameMonth, isSameDay, startOfDay, endOfDay, isSameMinute } from 'date-fns';
 import { MeetupappSocketService } from 'src/app/meetupapp-socket.service';
-
+import { CustomEventTitleFormatter } from 'src/app/custom-event-title-formatter.provider';
 const colors: any = {
   green: {
     primary: '#008000',
@@ -32,11 +32,21 @@ interface MyCalendarEventTimesChangedEvent extends CalendarEventTimesChangedEven
 
   event: MyEvent;
 }
+interface EventGroupMeta {
+  type: string;
+}
 
 @Component({
   selector: 'app-admin-view',
   templateUrl: './admin-view.component.html',
-  styleUrls: ['./admin-view.component.css']
+  styleUrls: ['./admin-view.component.css'],
+  encapsulation: ViewEncapsulation.None,
+  providers: [
+    {
+      provide: CalendarEventTitleFormatter,
+      useClass: CustomEventTitleFormatter
+    }
+  ]
 })
 export class AdminViewComponent implements OnInit {
 
@@ -90,9 +100,15 @@ export class AdminViewComponent implements OnInit {
   public onlineUserList: any = []
   public meetings: any = [];
   public events: MyEvent[] = [];
-
+  public minimumDate : any = new Date();
+  public maximumDate : any = new Date(this.minimumDate.getFullYear(),11,31);
+  
+  public maximumViewdate : any = new Date(this.minimumDate.getFullYear(),11,31);
+  public minimuViewdate : any = new Date(this.minimumDate.getFullYear(),0,1);
   public gentleReminder: Boolean = true;
   public title: any;
+  public prevBtnDisabled: boolean = false;
+  public nextBtnDisabled: boolean = false;
   public description: any;
   public startDate1: any;
   public endDate1: any;
@@ -106,6 +122,7 @@ export class AdminViewComponent implements OnInit {
   public isAdmin: Boolean = true;
   public isUser: Boolean = false;
   public currentUserStatus: any;
+  public groupedSimilarEvents: MyEvent[] = [];
   constructor(
     public userService: UserManagementService,
     public meetupappSocketService: MeetupappSocketService,
@@ -120,7 +137,7 @@ export class AdminViewComponent implements OnInit {
 
   
   ngOnInit() {
-
+    console.log(this.maximumDate + this.minimumDate)
     this.authToken = Cookie.get('authToken');
     this.currentUserId = Cookie.get('receiverId');
     this.currentUserName = Cookie.get('receiverName');
@@ -135,7 +152,43 @@ export class AdminViewComponent implements OnInit {
     //  setTimeout(()=>{
     //    this.getOnlineUserList();
     //  },9000)
-    
+    // Code for grouping events of same type
+    // this.groupedSimilarEvents = [];
+    // this.events = [];
+    // const processedEvents = new Set();
+    // this.events.forEach(event => {
+    //   if (processedEvents.has(event)) {
+    //     return;
+    //   }
+    //   const similarEvents = this.events.filter(otherEvent => {
+    //     return (
+    //       otherEvent !== event &&
+    //       !processedEvents.has(otherEvent) &&
+    //       isSameMinute(otherEvent.start, event.start) &&
+    //       (isSameMinute(otherEvent.end, event.end) ||
+    //         (!otherEvent.end && !event.end)) &&
+    //       otherEvent.color.primary === event.color.primary &&
+    //       otherEvent.color.secondary === event.color.secondary
+    //     );
+    //   });
+    //   processedEvents.add(event);
+    //   similarEvents.forEach(otherEvent => {
+    //     processedEvents.add(otherEvent);
+    //   });
+    //   if (similarEvents.length > 0) {
+    //     this.groupedSimilarEvents.push({
+    //       title: `${similarEvents.length + 1} events`,
+    //       color: event.color,
+    //       start: event.start,
+    //       end: event.end,
+    //       meta: {
+    //         groupedEvents: [event, ...similarEvents]
+    //       }
+    //     });
+    //   } else {
+    //     this.groupedSimilarEvents.push(event);
+    //   }
+    // });
     this.authErrorFunction()        
 
      setInterval(() => {
@@ -147,8 +200,52 @@ export class AdminViewComponent implements OnInit {
 
   /* Calendar Events */
 
+  dateIsValid(date: Date): boolean {
+    
+    return date >= this.minimuViewdate && date <= this.maximumViewdate;
+  }
+
   
-  
+  beforeMonthViewRender({ body }: { body: CalendarMonthViewDay[] }): void {
+    body.forEach(day => {      
+      if (!this.dateIsValid(day.date)) { 
+        
+        day.cssClass = 'bg-pink';
+        day.cssClass = 'cal-disabled';                              
+      }else{
+        this.prevBtnDisabled = false;
+        this.nextBtnDisabled = false;
+      }
+    });
+  }
+  beforeWeekViewRender(renderEvent: CalendarWeekViewBeforeRenderEvent) {
+    renderEvent.hourColumns.forEach(hourColumn => {
+      hourColumn.hours.forEach(hour => {
+        hour.segments.forEach(segment => {
+          if (!this.dateIsValid(segment.date)) { 
+        
+            segment.cssClass = 'bg-pink';
+            segment.cssClass = 'cal-disabled';                              
+          }else{
+            this.prevBtnDisabled = false;
+            this.nextBtnDisabled = false;
+          }
+        });
+      }); 
+    });
+  }
+//   beforeDayViewRender(renderEvent: CalendarDayViewBeforeRenderEvent) {
+//     renderEvent.hourColumns.forEach(hourColumn => {
+//       hourColumn.hours.forEach(hour => {
+//         hour.segments.forEach(segment => {
+//           if (segment.date.getHours() >= 2 && segment.date.getHours() <= 5) {
+//             segment.cssClass = 'bg-pink';
+//           }
+//         });
+//       });
+//     });
+//   }
+// }
   dayClicked({ date, events }: { date: Date; events: MyEvent[] }): void {
     if (isSameMonth(date, this.viewDate)) {
       if (
@@ -175,8 +272,7 @@ export class AdminViewComponent implements OnInit {
     
     if (action === 'Edited') {
       this.modalData = { event, action };
-      this.isUpdate = true;
-      console.log(event.meetingDescription);
+      this.isUpdate = true;      
       this.modal.open(this.modalEditMeeting, { size: 'lg' });
         
     }
@@ -188,7 +284,9 @@ export class AdminViewComponent implements OnInit {
 
     }
     else {
-      this.toastr.info("Not a valid action");
+      this.modalData = { event, action };
+      this.isUpdate = true;      
+      this.modal.open(this.modalEditMeeting, { size: 'lg' });
     }
   }
 

@@ -76,7 +76,7 @@ public signInFunction(): any {
           else{
             this.isLoading = false;
             this.toastr.error("Some Error Occurred", "Error!");
-            this.router.navigate(['/serverError']);
+            this.router.navigate(['/500']);
           }
             
         });//end calling signUpFunction

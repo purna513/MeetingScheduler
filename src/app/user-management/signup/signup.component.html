@@ -1,12 +1,11 @@
-<div class="container " style="background-clip: border-box;">
-    <div id="loginId" style="margin-top: 2vh; margin-bottom: 2vh;" class="col-sm-12 col-mautod-8 col-lg-6 mx-auto">
+<div class="container " >
+    <div id="signUpId" style="margin-top: 2vh; margin-bottom: 2vh;" class="col-sm-12 col-mautod-8 col-lg-6 mx-auto">
       <div class="jumbotron">        
           <div class="text-center">
-
               <h4>MeetUp App </h4>   
               <i class="fa fa-user-plus fa-4x" aria-hidden="true"></i>      
           </div>
-          <form id="signupform" class="form-horizontal" role="form">
+          <form id="signupform" class="form-horizontal" autocomplete="off" role="form">
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
@@ -18,7 +17,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="lastname" class="control-label">Last Name</label>                  
-                    <input type="text" #lastNameText="ngModel" minlength="3" id="inputLastName" name="lastName" [(ngModel)]="lastName"
+                    <input type="text" #lastNameText="ngModel" pattern="[A-za-z ]+$" minlength="3" id="inputLastName" name="lastName" [(ngModel)]="lastName"
                         class="form-control" placeholder="Last Name" required>                
                 </div>
               </div>
@@ -42,7 +41,10 @@
                   </div>
                   <div *ngIf="lastNameText.errors.minlength">
                       Last Name must be at least 4 characters long.
-                  </div>                                    
+                  </div>  
+                  <div *ngIf="lastNameText.errors?.pattern">
+                      Last name should contain only letters !
+                 </div>                                  
                 </div>
               </div>
             </div>
@@ -76,17 +78,22 @@
                     </span> 
                 </div>               
                   <input type="text" #user="ngModel" minlength="2" id="inputUserName" name="userName" [(ngModel)]="userName"
-                    class="form-control" placeholder="User Name" required>
-                    <span class="inputUserNameInfo">For Admin acess userName should end with -admin<br>Example Chandra-admin</span>
+                    class="form-control" placeholder="User Name" required>                                                            
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                  <span class="inputUserNameInfo">For Admin acess userName should end with -admin<br>Example Chandra-admin</span>
+                  <br>
                   <div [hidden]="user.pristine || user.valid" class="alert alert-danger">                
                       <div *ngIf="user.errors?.minlength">
-                        ** User Name should contain minimum  letters!
+                        ** User Name should contain 3 minimum  letters!
                       </div>                  
                       <div *ngIf="user.errors?.required">
                           ** User Name is required!
                       </div>
-                  </div>                       
-                </div>
+                  </div>                  
               </div>
             </div>
             <div class="row">
@@ -128,12 +135,12 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md">
+              <div class="col">
                 <div class="form-group">
                   <label for="mobile" class="control-label">Mobile</label>                  
                     <div class="input-group">
                       <div class="input-group-text">+{{countryCode}}</div>
-                      <input type="number" #mobileNum="ngModel" pattern="^\d{10}$" id="inputMobile" class="form-control" name="mobile" [(ngModel)]="mobileNumber"
+                      <input type="number" #mobileNum="ngModel" max="10" size="10" id="inputMobile" class="form-control" name="mobile" [(ngModel)]="mobileNumber"
                         placeholder="Mobile" required>
                     </div>
                 </div>

@@ -6,17 +6,14 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>      
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          
-            
-            <a class="navbar-brand text-primary" > <strong>Admin Dashboard</strong></a>
-              
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">              
-                <button class="btn btn-link" (click)="getAdminMeetings()"
-            ><i class="fa fa-clock-o" aria-hidden="true"></i> My Schedule</button>
-              </li>                                   
-          </ul> 
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">                      
+            <a class="navbar-brand text-primary" > <strong>Admin Dashboard</strong></a>              
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">              
+                  <button class="btn btn-link" (click)="getAdminMeetings()"
+              ><i class="fa fa-clock-o" aria-hidden="true"></i> My Schedule</button>
+                </li>                                   
+            </ul> 
           <div class="nav navbar-nav navbar-right ">
               <button class="btn btn-link" (click)="signOutFunction()"
                  ><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</button>
@@ -81,15 +78,16 @@
         <div class="row">
           <div class="col-md-3">
             <div class="btn-group btn-group-sm" >
-              <div
+              <button
                 class="btn btn-primary btn-sm"
                 mwlCalendarPreviousView
                 [view]="view"
                 [(viewDate)]="viewDate"
                 (viewDateChange)="closeOpenMonthViewDay()"
+                [disabled]="prevBtnDisabled"
               >
               <i class="fa fa-angle-left"></i>
-              </div>
+            </button>
               <div
                 class="btn btn-outline-secondary btn-sm"
                 mwlCalendarToday
@@ -97,15 +95,16 @@
               >
                 Today
               </div>
-              <div
+              <button
                 class="btn btn-primary btn-sm"
                 mwlCalendarNextView
                 [view]="view"
                 [(viewDate)]="viewDate"
                 (viewDateChange)="closeOpenMonthViewDay()"
+                [disabled]="nextBtnDisabled"
               >
               <i class="fa fa-angle-right"></i>
-              </div>
+              </button>
             </div>
           </div>        
           <div class="col-md-3">
@@ -148,6 +147,7 @@
       (dayClicked)="dayClicked($event.day)"
       (eventClicked)="handleEvent('Clicked', $event.event)"
       (eventTimesChanged)="eventTimesChanged($event)"
+      (beforeViewRender)="beforeMonthViewRender($event)"
     >
     </mwl-calendar-month-view>
     <mwl-calendar-week-view
@@ -201,7 +201,7 @@
           <div class="row">
           <div class="col-md-5">
               <label for="startTime" class="sr-only">Start Time:</label>
-              <input [owlDateTime]="dt1" name="startDate1" [(ngModel)]="startDate1" placeholder="Start Date Time">
+              <input [owlDateTime]="dt1" [min]="minimumDate" name="startDate1" [(ngModel)]="startDate1" placeholder="Start Date Time">
               <span [owlDateTimeTrigger]="dt1">
                 <i class="fa fa-calendar"></i>
               </span>
@@ -209,7 +209,7 @@
           </div>
           <div class="col-md-5">
               <label for="endTime" class="sr-only">End Time:</label>
-              <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="endDate1" placeholder="End Date Time">
+              <input [owlDateTime]="dt2" [max]="maximumDate" name="endDate1" [(ngModel)]="endDate1" placeholder="End Date Time">
 
               <span [owlDateTimeTrigger]="dt2">
                 <i class="fa fa-calendar"></i>
@@ -280,23 +280,24 @@
       <form #updateMeetingForm="ngForm">
       <div class="modal-body">        
           <div class="row">
+              <div class="col-md-5 col-lg-5 owlStyle">
+                  <label>Start Date & Time:</label>
+                  <input [owlDateTime]="dt1" [min]="minimumDate" name="startDate1" [(ngModel)]="modalData.event.meetingStartDate" placeholder="Start Date Time">
+                  <span [owlDateTimeTrigger]="dt1">
+                    <i class="fa fa-calendar"></i>
+                  </span>
+                  <owl-date-time #dt1></owl-date-time>              
+              </div>
               <div class="col-md-5">
                   <label>End date & Time:</label>
-                  <input [owlDateTime]="dt2" name="endDate1" [(ngModel)]="modalData.event.meetingEndDate" placeholder="End Date Time">
+                  <input [owlDateTime]="dt2" [max]="maximumDate" name="endDate1" [(ngModel)]="modalData.event.meetingEndDate" placeholder="End Date Time">
     
                   <span [owlDateTimeTrigger]="dt2">
                     <i class="fa fa-calendar"></i>
                   </span>
                   <owl-date-time #dt2></owl-date-time>
               </div>  
-              <div class="col-md-5 col-lg-5 owlStyle">
-                <label>Start Date & Time:</label>
-                <input [owlDateTime]="dt1" name="startDate1" [(ngModel)]="modalData.event.meetingStartDate" placeholder="Start Date Time">
-                <span [owlDateTimeTrigger]="dt1">
-                  <i class="fa fa-calendar"></i>
-                </span>
-                <owl-date-time #dt1></owl-date-time>              
-            </div>
+              
           </div>
           
           <div class="row"> 

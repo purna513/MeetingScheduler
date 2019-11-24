@@ -7,7 +7,8 @@ import * as io from 'socket.io-client';
   providedIn: 'root'
 })
 export class MeetupappSocketService {
-  public baseUrl = "http://localhost:3000";
+ // public baseUrl = "http://localhost:3000";
+  public baseUrl = "http://api.thekalabhairava.com";
   public socket;
   constructor(private _http: HttpClient) {
     console.log("Socket service intialized");
