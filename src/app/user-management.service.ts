@@ -13,7 +13,7 @@ export class UserManagementService {
   public baseUrl = "http://api.thekalabhairava.com/api/v1";
  
   constructor(private _http: HttpClient) {
-    console.log("User service intialized");
+    console.log("User service intialized" + this.baseUrl);
    }
 
 /* Start Functions for User Management */

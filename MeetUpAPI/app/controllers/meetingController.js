@@ -15,8 +15,7 @@ const UserModel = mongoose.model('User')
            meetingStartDate,meetingEndDate,meetingDescription,meetingPlace
 */
 
-let addMeetingFunction = (req, res) => {
-    console.log(req.body.emailAddress + "From Add meeting Fuction Jeeeee");
+let addMeetingFunction = (req, res) => {    
     let validateUserInput = () => {
         return new Promise((resolve, reject) => {
             if (req.body.meetingTopic && req.body.hostId && req.body.hostName &&
@@ -56,15 +55,14 @@ let addMeetingFunction = (req, res) => {
                     let apiResponse = response.generate(true, 'Failed to add new Meeting', 500, null)
                     reject(apiResponse)
                 } else {
-                    let newMeetingObj = newMeeting.toObject();
-                    //console.log(`${applicationUrl}/verify-email/${newUserObj.userId}`)
+                    let newMeetingObj = newMeeting.toObject();                    
                    // Creating object for sending welcome email
                     let sendEmailOptions = {
                         email: newMeetingObj.participantEmail,
                         name: newMeetingObj.participantName,
                         subject: `Meeting Confirmed: ${newMeetingObj.meetingTopic}`,
                         html: `<h3> Your meeting is planned! </h3>
-                              <br> Hi , ${newMeetingObj.hostName} has scheduled a meeting via Lets Meet.
+                              <br> Hi , ${newMeetingObj.hostName} has scheduled a meeting via MeetUp App.
                               <br>  
 
                             <div class="card" style="width: 18rem;">
@@ -203,7 +201,7 @@ let getAllMeetingsFunction = (req, res) => {
     findUserDetails(req, res)
         .then(findMeetings)
         .then((resolve) => {
-            //let apiResponse = response.generate(false, 'Meetings Found and Listed', 200, resolve)
+            let apiResponse = response.generate(false, 'Meetings Found and Listed', 200, resolve)
             res.send(resolve)
         })
         .catch((err) => {
@@ -227,8 +225,7 @@ let updateMeetingFunction = (req, res) => {
                 .select()
                 .lean()
                 .exec((err, meetingDetails) => {
-                    if (err) {
-                        console.log(err)
+                    if (err) {                        
                         logger.error(err.message, 'Meeting Controller: findMeetingDetails', 10)
                         let apiResponse = response.generate(true, 'Failed To Find Meeting Details', 500, null)
                         reject(apiResponse)
