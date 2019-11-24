@@ -7,8 +7,8 @@ import * as io from 'socket.io-client';
   providedIn: 'root'
 })
 export class MeetupappSocketService {
- // public baseUrl = "http://localhost:3000";
-  public baseUrl = "http://api.thekalabhairava.com";
+  public baseUrl = "http://localhost:3000";
+  //public baseUrl = "http://api.thekalabhairava.com";
   public socket;
   constructor(private _http: HttpClient) {
     console.log("Socket service intialized");
@@ -26,13 +26,10 @@ export class MeetupappSocketService {
       
     }//end verifyUser
   
-    public onlineUserList = () => {
-      console.log("From socket service")
-      return Observable.create((observer) => {
-        console.log("22 one");
+    public onlineUserList = () => {      
+      return Observable.create((observer) => {        
         this.socket.on('online-user-list', (userList) => {
-          observer.next(userList);
-          console.log(userList);
+          observer.next(userList);          
         });//end On method
       });//end observable
   

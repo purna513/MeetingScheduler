@@ -9,8 +9,8 @@ let myPhoneRequest = new Request('./../resources/phones.json');
 })
 export class UserManagementService {
 
-  //public baseUrl = "http://localhost:3000/api/v1";
-  public baseUrl = "http://api.thekalabhairava.com/api/v1";
+  public baseUrl = "http://localhost:3000/api/v1";
+  //public baseUrl = "http://api.thekalabhairava.com/api/v1";
  
   constructor(private _http: HttpClient) {
     console.log("User service intialized" + this.baseUrl);
@@ -106,8 +106,8 @@ export class UserManagementService {
       .set('authToken',data.authToken)
       .set('emailAddress',data.emailAddress)
 
-    return this._http.post(`${this.baseUrl}/meetings/addMeeting`, params);
-  }//end addMeeting
+    return this._http.post(`${this.baseUrl}/meetings/createMeeting`, params);
+  }//end createMeeting
 
   
   public getUserAllMeeting(userId,authToken): Observable<any> {

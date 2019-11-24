@@ -10,29 +10,29 @@ const emailLib = require('../libs/emailLib');
 /* Models */
 const MeetingModel = mongoose.model('Meeting')
 const UserModel = mongoose.model('User')
-// start addMeetingFunction 
+// start createMeetingFunction 
 /* params: meetingTopic,hostId,hostName,participantId,participantName,participantEmail,
            meetingStartDate,meetingEndDate,meetingDescription,meetingPlace
 */
 
-let addMeetingFunction = (req, res) => {    
-    let validateUserInput = () => {
+let createMeetingFunction = (req, res) => {    
+    let validateInputFromUser = () => {
         return new Promise((resolve, reject) => {
             if (req.body.meetingTopic && req.body.hostId && req.body.hostName &&
                 req.body.participantId && req.body.participantName && req.body.meetingStartDate &&
                 req.body.meetingEndDate && req.body.meetingDescription && req.body.meetingPlace) {
                 resolve(req)
             } else {
-                logger.error('Field Missing During Meeting Creation', 'meetingController: addMeeting()', 5)
+                logger.error('Expecting More Fields During Meeting Creation', 'meetingController: createMeeting()', 5)
                 let apiResponse = response.generate(true, 'One or More Parameter(s) is missing', 400, null)
                 reject(apiResponse)
             }
         })
     }// end validate user input
 
-    let addMeeting = () => {
+    let createMeeting = () => {
         return new Promise((resolve, reject) => {
-            console.log(req.body)
+
             let newMeeting = new MeetingModel({
                 meetingId: shortid.generate(),
                 meetingTopic: req.body.meetingTopic,
@@ -51,7 +51,7 @@ let addMeetingFunction = (req, res) => {
             newMeeting.save((err, newMeeting) => {
                 if (err) {
                     console.log(err)
-                    logger.error(err.message, 'meetingController: addMeeting', 10)
+                    logger.error(err.message, 'meetingController: createMeeting', 10)
                     let apiResponse = response.generate(true, 'Failed to add new Meeting', 500, null)
                     reject(apiResponse)
                 } else {
@@ -65,24 +65,24 @@ let addMeetingFunction = (req, res) => {
                               <br> Hi , ${newMeetingObj.hostName} has scheduled a meeting via MeetUp App.
                               <br>  
 
-                            <div class="card" style="width: 18rem;">
+                            <div class="card" style="width: 15rem;">
                               <div class="card-body">
-                                  <h5 class="card-title">Agenda</h5>
+                                  <h4 class="card-title">Meetinng Description</h4>
                                   <p class="card-text">${newMeetingObj.meetingDescription}</p>
                               </div>
                             </div>
 
                               
-                            <div class="card" style="width: 18rem;">
+                            <div class="card" style="width: 15rem;">
                                 <div class="card-body">
-                                    <h5 class="card-title">When</h5>
+                                    <h5 class="card-title">Meeting Time</h5>
                                     <p class="card-text">${newMeetingObj.meetingStartDate}</p>
                                 </div>
                             </div>
                             
-                            <div class="card" style="width: 18rem;">
+                            <div class="card" style="width: 15rem;">
                                 <div class="card-body">
-                                    <h5 class="card-title">Where</h5>
+                                    <h5 class="card-title">Meeting Place</h5>
                                     <p class="card-text">${newMeetingObj.meetingPlace}</p>
                                 </div>
                             </div>
@@ -99,11 +99,11 @@ let addMeetingFunction = (req, res) => {
             })
 
         })
-    }// end addMeeting function
+    }// end createMeeting function
 
 
-    validateUserInput(req, res)
-        .then(addMeeting)
+    validateInputFromUser(req, res)
+        .then(createMeeting)
         .then((resolve) => {
             let apiResponse = response.generate(false, 'Meeting Created', 200, resolve)
             res.send(apiResponse)
@@ -113,15 +113,15 @@ let addMeetingFunction = (req, res) => {
             res.send(err);
         })
 
-}// end addMeetingFunction 
+}// end createMeetingFunction 
 
-/* Start getAllMeetingsFunction */
+/* Start fetchAllMeetingFunction */
 /* params: userId
 */
 
-let getAllMeetingsFunction = (req, res) => {
+let fetchAllMeetingFunction = (req, res) => {
 
-    let findUserDetails = () => {
+    let getUserDetails = () => {
         return new Promise((resolve, reject) => {
             console.log(req.params.userId);
             UserModel.findOne({ 'userId': req.params.userId })
@@ -130,7 +130,7 @@ let getAllMeetingsFunction = (req, res) => {
                 .exec((err, userDetails) => {
                     if (err) {
                         console.log(err)
-                        logger.error(err.message, 'Meeting Controller: findUserDetails', 10)
+                        logger.error(err.message, 'Meeting Controller: getUserDetails', 10)
                         let apiResponse = response.generate(true, 'Failed To Find User Details', 500, null)
                         reject(apiResponse)
                     } else if (check.isEmpty(userDetails)) {
@@ -138,31 +138,28 @@ let getAllMeetingsFunction = (req, res) => {
                         let apiResponse = response.generate(true, 'No User Found', 404, null)
                         reject(apiResponse)
                     } else {
-                        let apiResponse = response.generate(false, 'User Details Found', 200, userDetails)
+                        response.generate(false, 'User Details Found', 200, userDetails)
                         resolve(userDetails)
                     }
                 })
         })
-    }// end finduserDetails
+    }// end getUserDetails
 
-    let findMeetings = (userDetails) => {
-        return new Promise((resolve, reject) => {
+    let getMeetings = (userDetails) => {
+        return new Promise((resolve, reject) => {            
 
-            console.log(userDetails.isAdmin)
-            
-            if (userDetails.isAdmin) {
-                console.log("Hii");
+            if (userDetails.isAdmin) {                
                 MeetingModel.find({ 'hostId': req.params.userId })
                     .select()
                     .lean()
                     .exec((err, meetingDetails) => {
                         if (err) {
                             console.log(err)
-                            logger.error(err.message, 'Meeting Controller: findMeetings', 10)
+                            logger.error(err.message, 'Meeting Controller: getMeetings', 10)
                             let apiResponse = response.generate(true, 'Failed To Find Meetings', 500, null)
                             reject(apiResponse)
                         } else if (check.isEmpty(meetingDetails)) {
-                            logger.info('No Meeting Found', 'Meeting  Controller:findMeetings')
+                            logger.info('No Meeting Found', 'Meeting  Controller:getMeetings')
                             let apiResponse = response.generate(true, 'No Meeting Found', 404, null)
                             reject(apiResponse)
                         } else {
@@ -179,7 +176,7 @@ let getAllMeetingsFunction = (req, res) => {
                     .exec((err, meetingDetails) => {
                         if (err) {
                             console.log(err)
-                            logger.error(err.message, 'Meeting Controller: findMeetings', 10)
+                            logger.error(err.message, 'Meeting Controller: getMeetings', 10)
                             let apiResponse = response.generate(true, 'Failed To Find Meetings', 500, null)
                             reject(apiResponse)
                         } else if (check.isEmpty(meetingDetails)) {
@@ -195,11 +192,11 @@ let getAllMeetingsFunction = (req, res) => {
             }
 
         })
-    }// end findMeetings
+    }// end getMeetings
 
 
-    findUserDetails(req, res)
-        .then(findMeetings)
+    getUserDetails(req, res)
+        .then(getMeetings)
         .then((resolve) => {
             let apiResponse = response.generate(false, 'Meetings Found and Listed', 200, resolve)
             res.send(resolve)
@@ -209,28 +206,28 @@ let getAllMeetingsFunction = (req, res) => {
             res.send(err);
         })
 
-}// end getAllMeetingsFunction 
+}// end fetchAllMeetingFunction 
 
 
-/* Start Update Meeting details */
+/* Update Meeting details */
 /* params: meetingId
    body : meetingTopic,meetingStartDate,meetingEndDate,meetingDescription,meetingPlace
 */
 
 let updateMeetingFunction = (req, res) => {
 
-    let findMeetingDetails = () => {
+    let getMeetingsDetails = () => {
         return new Promise((resolve, reject) => {
             MeetingModel.findOne({ 'meetingId': req.params.meetingId })
                 .select()
                 .lean()
                 .exec((err, meetingDetails) => {
                     if (err) {                        
-                        logger.error(err.message, 'Meeting Controller: findMeetingDetails', 10)
+                        logger.error(err.message, 'Meeting Controller: getMeetingsDetails', 10)
                         let apiResponse = response.generate(true, 'Failed To Find Meeting Details', 500, null)
                         reject(apiResponse)
                     } else if (check.isEmpty(meetingDetails)) {
-                        logger.info('No Meeting Found', 'Meeting  Controller:findMeetingDetails')
+                        logger.info('No Meeting Found', 'Meeting  Controller:getMeetingsDetails')
                         let apiResponse = response.generate(true, 'No Meeting Found', 404, null)
                         reject(apiResponse)
                     } else {
@@ -239,11 +236,10 @@ let updateMeetingFunction = (req, res) => {
                     }
                 })
         })
-    }// end findmeetingdetails
+    }// end getMeetingsDetails
 
     let updateMeeting = (meetingDetails) => {
         return new Promise((resolve, reject) => {
-
             let options = req.body;
             MeetingModel.update({ 'meetingId': req.params.meetingId }, options).exec((err, result) => {
                 if (err) {
@@ -267,21 +263,21 @@ let updateMeetingFunction = (req, res) => {
                               <br> ${newMeetingObj.hostName} Updated the meeting: ${options.meetingTopic}.
                               <br>
                                       
-                              <div class="card" style="width: 18rem;">
+                              <div class="card" style="width: 15rem;">
                                   <div class="card-body">
                                       <h5 class="card-title">Agenda</h5>
                                       <p class="card-text">${options.meetingDescription}</p>
                                   </div>
                               </div>
 
-                              <div class="card" style="width: 18rem;">
+                              <div class="card" style="width: 15rem;">
                                   <div class="card-body">
                                       <h5 class="card-title">When</h5>
                                       <p class="card-text">${options.meetingStartDate}</p>
                                   </div>
                               </div>
                               
-                              <div class="card" style="width: 18rem;">
+                              <div class="card" style="width: 15rem;">
                                   <div class="card-body">
                                       <h5 class="card-title">Where</h5>
                                       <p class="card-text">${options.meetingPlace}</p>
@@ -305,7 +301,7 @@ let updateMeetingFunction = (req, res) => {
     }// end updateMeeting function
 
 
-    findMeetingDetails(req, res)
+    getMeetingsDetails(req, res)
         .then(updateMeeting)
         .then((resolve) => {
             let apiResponse = response.generate(false, 'Meeting Updated', 200, "None")
@@ -320,9 +316,9 @@ let updateMeetingFunction = (req, res) => {
 /* Start Delete Meeting  */
 /* params : meetingId
 */
-let deleteMeetingFunction = (req, res) => {
+let deleteMeetingFromCalendar = (req, res) => {
 
-    let findMeetingDetails = () => {
+    let getMeetingsDetails = () => {
         return new Promise((resolve, reject) => {
             MeetingModel.findOne({ 'meetingId': req.params.meetingId })
                 .select()
@@ -330,11 +326,11 @@ let deleteMeetingFunction = (req, res) => {
                 .exec((err, meetingDetails) => {
                     if (err) {
                         console.log(err)
-                        logger.error(err.message, 'Meeting Controller: findMeetingDetails', 10)
+                        logger.error(err.message, 'Meeting Controller: getMeetingsDetails', 10)
                         let apiResponse = response.generate(true, 'Failed To Find Meeting Details', 500, null)
                         reject(apiResponse)
                     } else if (check.isEmpty(meetingDetails)) {
-                        logger.info('No Meeting Found', 'Meeting  Controller:findMeetingDetails')
+                        logger.info('No Meeting Found', 'Meeting  Controller:getMeetingsDetails')
                         let apiResponse = response.generate(true, 'No Meeting Found', 404, null)
                         reject(apiResponse)
                     } else {
@@ -385,7 +381,7 @@ let deleteMeetingFunction = (req, res) => {
     }// end deleteMeeting function
 
 
-    findMeetingDetails(req, res)
+    getMeetingsDetails(req, res)
         .then(deleteMeeting)
         .then((resolve) => {
             let apiResponse = response.generate(false, 'Deleted the Meeting successfully', 200, resolve)
@@ -396,12 +392,12 @@ let deleteMeetingFunction = (req, res) => {
             res.send(err);
         })
 
-}// end deleteMeetingFunction 
+}// end deleteMeetingFromCalendar 
 
 
 module.exports = {
-    addMeetingFunction: addMeetingFunction,
-    getAllMeetingsFunction: getAllMeetingsFunction,
+    createMeetingFunction: createMeetingFunction,
+    fetchAllMeetingFunction: fetchAllMeetingFunction,
     updateMeetingFunction:updateMeetingFunction,
-    deleteMeetingFunction: deleteMeetingFunction
+    deleteMeetingFromCalendar: deleteMeetingFromCalendar
 }// end exports

@@ -11,7 +11,7 @@ const AuthModel = mongoose.model('Auth')
 const emailLib = require('../libs/emailLib');
 /* Models */
 const UserModel = mongoose.model('User')
-const applicationUrl = 'http://localhost:4200' //url of frontend application
+const applicationUrl = 'http://thekalabhairava.com' //url of frontend application
 // start user signup function 
 
 let signUpFunction = (req, res) => {
@@ -44,8 +44,7 @@ let signUpFunction = (req, res) => {
                         logger.error(err.message, 'userController: createUser', 10)
                         let apiResponse = response.generate(true, 'Failed To Create User', 500, null)
                         reject(apiResponse)
-                    } else if (check.isEmpty(retrievedUserDetails)) {
-                        console.log(req.body)
+                    } else if (check.isEmpty(retrievedUserDetails)) {                        
                         let newUser = new UserModel({
                             userId: shortid.generate(),
                             firstName: req.body.firstName,
@@ -58,22 +57,19 @@ let signUpFunction = (req, res) => {
                             createdOn: time.now()
                         })
                         newUser.save((err, newUser) => {
-                            if (err) {
-                                console.log(err)
+                            if (err) {                                
                                 logger.error(err.message, 'userController: createUser', 10)
                                 let apiResponse = response.generate(true, 'Failed to create new User', 500, null)
                                 reject(apiResponse)
                             } else {
-                                let newUserObj = newUser.toObject();
-                                console.log(`${applicationUrl}/verify-email/${newUserObj.userId}`)
-                                //Creating object for sending welcome email
+                                let newUserObj = newUser.toObject();                                
+                                //Creating an object for sending welcome email
                                 let sendEmailOptions = {
                                     email: newUserObj.email,
                                     name: newUserObj.firstName + ' ' + newUserObj.lastName,
                                     subject: 'Welcome to Lets Meet ',
                                     html: `<b> Dear ${newUserObj.firstName}</b><br> Hope you are doing well. 
-                                    <br>Welcome to our Meeting Planner App <br>
-                                    Please click on following link to verify your account with Lets Meet.<br>s`
+                                    <br>Welcome to our Meeting Planner App <br>`
                                 }
 
                                 setTimeout(() => {
@@ -106,9 +102,7 @@ let signUpFunction = (req, res) => {
         })
 
 }// end user signup function 
-// start of login function 
-/* params : email,password
-*/
+
 // start of login function 
 let loginFunction = (req, res) => {
     let findUser = () => {        
@@ -117,11 +111,10 @@ let loginFunction = (req, res) => {
                 UserModel.findOne({ email: req.body.email}, (err, userDetails) => {
                     /* handle the error here if the User is not found */
                     if (err) {                        
-                        logger.error('Failed To Retrieve User Data', 'userController: findUser()', 10)
-                        /* generate the error message and the api response message here */
+                        logger.error('Failed To Retrieve User Data', 'userController: findUser()', 10)                        
                         let apiResponse = response.generate(true, 'Failed To Find User Details', 500, null)
                         reject(apiResponse)
-                        /* if Company Details is not found */
+                        /* Check if User Details is not found */
                     } else if (check.isEmpty(userDetails)) {
                         /* generate the response and the console error message here */
                         logger.error('No User Found', 'userController: findUser()', 7)
@@ -140,13 +133,10 @@ let loginFunction = (req, res) => {
             }
         })
     }
-    let validatePassword = (retrievedUserDetails) => {
-        console.log("validatePassword");
-        return new Promise((resolve, reject) => {
-            console.log(req.body.password);
+    let validatePassword = (retrievedUserDetails) => {        
+        return new Promise((resolve, reject) => {            
             passwordLib.comparePassword(req.body.password, retrievedUserDetails.password, (err, isMatch) => {
-                if (err) {
-                    console.log(err)
+                if (err) {                    
                     logger.error(err.message, 'userController: validatePassword()', 10)
                     let apiResponse = response.generate(true, 'Login Failed', 500, null)
                     reject(apiResponse)
@@ -167,12 +157,10 @@ let loginFunction = (req, res) => {
         })
     }
 
-    let generateToken = (userDetails) => {
-        console.log("generate token");
+    let generateToken = (userDetails) => {        
         return new Promise((resolve, reject) => {
             token.generateToken(userDetails, (err, tokenDetails) => {
-                if (err) {
-                    console.log(err)
+                if (err) {                    
                     let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
                     reject(apiResponse)
                 } else {
@@ -183,8 +171,7 @@ let loginFunction = (req, res) => {
             })
         })
     }
-    let saveToken = (tokenDetails) => {
-        console.log("save token");
+    let saveToken = (tokenDetails) => {        
         return new Promise((resolve, reject) => {
             AuthModel.findOne({ userId: tokenDetails.userId }, (err, retrievedTokenDetails) => {
                 if (err) {
@@ -217,8 +204,7 @@ let loginFunction = (req, res) => {
                     retrievedTokenDetails.tokenSecret = tokenDetails.tokenSecret
                     retrievedTokenDetails.tokenGenerationTime = time.now()
                     retrievedTokenDetails.save((err, newTokenDetails) => {
-                        if (err) {
-                            console.log(err)
+                        if (err) {                            
                             logger.error(err.message, 'userController: saveToken', 10)
                             let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
                             reject(apiResponse)
@@ -244,9 +230,7 @@ let loginFunction = (req, res) => {
             res.status(200)
             res.send(apiResponse)
         })
-        .catch((err) => {
-            console.log("errorhandler");
-            console.log(err);
+        .catch((err) => {            
             res.status(err.status)
             res.send(err)
         })
@@ -285,18 +269,15 @@ let retrivePasswordFunction = (req, res) => {
     let findUser = () => {
         console.log("findUser");
         return new Promise((resolve, reject) => {
-            if (req.body.email) {
-                console.log("req body email is there");
-                console.log(req.body);
+            if (req.body.email) {                                
                 UserModel.findOne({ email: req.body.email }, (err, userDetails) => {
                     /* handle the error here if the User is not found */
-                    if (err) {
-                        console.log(err)
+                    if (err) {                        
                         logger.error('Failed To Retrieve User Data', 'userController: findUser()', 10)
                         /* generate the error message and the api response message here */
                         let apiResponse = response.generate(true, 'Failed To Find User Details', 500, null)
                         reject(apiResponse)
-                        /* if Company Details is not found */
+                        /* if User Details is not found */
                     } else if (check.isEmpty(userDetails)) {
                         /* generate the response and the console error message here */
                         logger.error('No User Found', 'userController: findUser()', 7)

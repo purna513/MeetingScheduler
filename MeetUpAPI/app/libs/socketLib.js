@@ -22,7 +22,7 @@ let setServer = (server) => {
             console.log("set-user called")
             tokenLib.verifyClaimWithoutSecret(authToken, (err, user) => {
                 if (err) {
-                    console.log("From verify without claim");
+                    
                     socket.emit('auth-error', { status: 500, error: 'Please provide correct auth token' })
                 }
                 else {
@@ -33,13 +33,15 @@ let setServer = (server) => {
                     socket.userId = currentUser.userId
                     let fullName = `${currentUser.firstName} ${currentUser.lastName}`
                     console.log(`${fullName} is online`);
-                    socket.emit(currentUser.userId,"You are online")
+                    let userObject = { userId: currentUser.userId, fullName: fullName }
+                    allOnlineUsers.push(userObject);
+                    console.log(allOnlineUsers);
 
-                    let userObj = {userId:currentUser.userId,fullName:fullName}
-                    allOnlineUsers.push(userObj)
-                    console.log(allOnlineUsers)                    
-                    socket.broadcast.emit('online-user-list', allOnlineUsers);
-                }
+                    // // setting room name
+                    socket.room = 'edChat'
+                    // joining chat-group room.
+                    socket.join(socket.room)
+                    myIo.emit('online-user-list', allOnlineUsers);               }
             })
 
         }) // end of listening set-user event
@@ -54,14 +56,17 @@ let setServer = (server) => {
             var removeIndex = allOnlineUsers.map(function(user) { return user.userId; }).indexOf(socket.userId);
             allOnlineUsers.splice(removeIndex,1)
             console.log(allOnlineUsers)
-            socket.broadcast.emit('online-user-list', allOnlineUsers);            
+            socket.room = 'edChat'
+            // joining chat-group room.
+            socket.join(socket.room)
+            myIo.emit('online-user-list', allOnlineUsers);         
 
         }) // end of on disconnect
 
         socket.on('notify-updates', (data) => {
             console.log("socket notify-updates called")
             console.log(data);
-            socket.broadcast.emit(data.userId, data);
+            socket.emit(data.userId, data);
         });
 
     });

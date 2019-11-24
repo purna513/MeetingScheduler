@@ -1,11 +1,9 @@
-'use strict';
-
 const nodemailer = require('nodemailer');
 let sendEmail = (sendEmailOptions) => {
 
     let account = {
-        user: 'blikesekhar@gmail.com', //emailid
-        pass: 'Purna@1234'  //password
+        user: 'blikesekhar@gmail.com',
+        pass: 'Purna@1234'  
     }
 
     let transporter = nodemailer.createTransport({
@@ -15,15 +13,13 @@ let sendEmail = (sendEmailOptions) => {
             pass: account.pass 
         }
     });
-
-    //console.log("from node mailer"+transporter.auth.user)
-    // setup email data with unicode symbols
+        
     let mailOptions = {
-        from: 'blikesekhar@gmail.com', // sender address
-        to: sendEmailOptions.email, // list of receivers
-        subject: sendEmailOptions.subject, // Subject line
+        from: 'blikesekhar@gmail.com', 
+        to: sendEmailOptions.email, 
+        subject: sendEmailOptions.subject, 
         text: `Dear ${sendEmailOptions.name},
-               Welcome to our Soft Chat a brand new chat application for our admirable Employees.
+               Welcome to our MeetUp App a brand new aplication with plenty of user friendly function.
         `, // plain text body
         html: sendEmailOptions.html // html body
     };
