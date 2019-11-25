@@ -240,8 +240,8 @@ let updateMeetingFunction = (req, res) => {
 
     let updateMeeting = (meetingDetails) => {
         return new Promise((resolve, reject) => {
-            let options = req.body;
-            MeetingModel.update({ 'meetingId': req.params.meetingId }, options).exec((err, result) => {
+            let meetingUpdateetails = req.body;
+            MeetingModel.update({ 'meetingId': req.params.meetingId }, meetingUpdateetails).exec((err, result) => {
                 if (err) {
                     console.log(err)
                     logger.error(err.message, 'Meeting Controller:updateMeeting', 10)
@@ -257,30 +257,30 @@ let updateMeetingFunction = (req, res) => {
                     let sendEmailOptions = {
                         email: newMeetingObj.participantEmail,
                         name: newMeetingObj.participantName,
-                        subject: `Your Meeting Has Been Updated: ${options.meetingTopic}`,
+                        subject: `Your Meeting Has Been Updated: ${meetingUpdateetails.meetingTopic}`,
                         html: `<h3> Your meeting has been modified! </h3>
                               <br> Hi , ${newMeetingObj.participantName} .
-                              <br> ${newMeetingObj.hostName} Updated the meeting: ${options.meetingTopic}.
+                              <br> ${newMeetingObj.hostName} Updated the meeting: ${meetingUpdateetails.meetingTopic}.
                               <br>
                                       
                               <div class="card" style="width: 15rem;">
                                   <div class="card-body">
-                                      <h5 class="card-title">Agenda</h5>
-                                      <p class="card-text">${options.meetingDescription}</p>
+                                      <h5 class="card-title">Meeting Topic</h5>
+                                      <p class="card-text">${meetingUpdateetails.meetingDescription}</p>
                                   </div>
                               </div>
 
                               <div class="card" style="width: 15rem;">
                                   <div class="card-body">
-                                      <h5 class="card-title">When</h5>
-                                      <p class="card-text">${options.meetingStartDate}</p>
+                                      <h5 class="card-title">Meeting Start Date</h5>
+                                      <p class="card-text">${meetingUpdateetails.meetingStartDate}</p>
                                   </div>
                               </div>
                               
                               <div class="card" style="width: 15rem;">
                                   <div class="card-body">
-                                      <h5 class="card-title">Where</h5>
-                                      <p class="card-text">${options.meetingPlace}</p>
+                                      <h5 class="card-title">Meeting Venue</h5>
+                                      <p class="card-text">${meetingUpdateetails.meetingPlace}</p>
                                   </div>
                               </div>
         

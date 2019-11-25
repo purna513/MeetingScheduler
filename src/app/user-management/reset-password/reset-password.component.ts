@@ -32,7 +32,7 @@ export class ResetPasswordComponent implements OnInit {
     this.router.navigate(['/login']);
   }//end of goToSign function
 
-  public updatePasswordFunction(): any {
+  public passwordUpdateFunction(): any {
     if (!this.password) {
       this.toastr.warning("Password is required", "Warning!");
     }
@@ -70,10 +70,10 @@ export class ResetPasswordComponent implements OnInit {
   
             }
               
-          });//end calling updatePasswordFunction
+          });//end calling passwordUpdateFunction
   
     }
   
-}//end updatePasswordFunction function
+}//end passwordUpdateFunction function
 
 }

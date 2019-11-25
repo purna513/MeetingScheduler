@@ -67,9 +67,9 @@ let signUpFunction = (req, res) => {
                                 let sendEmailOptions = {
                                     email: newUserObj.email,
                                     name: newUserObj.firstName + ' ' + newUserObj.lastName,
-                                    subject: 'Welcome to Lets Meet ',
+                                    subject: 'Welcome to MeetUp App ',
                                     html: `<b> Dear ${newUserObj.firstName}</b><br> Hope you are doing well. 
-                                    <br>Welcome to our Meeting Planner App <br>`
+                                    <br>Welcome to our Meeting Scheduler App <br>`
                                 }
 
                                 setTimeout(() => {
@@ -334,15 +334,15 @@ let retrivePasswordFunction = (req, res) => {
                     console.log(tokenDetails)
                     let sendEmailOptions = {
                         email: tokenDetails.userDetails.email,
-                        subject: 'Reset Password for Lets Meet ',
+                        subject: 'Reset Password for Meet Up App ',
                         html: `<h4> Hi ${tokenDetails.userDetails.firstName}</h4>
                             <p>
-                                We got a request to reset your password associated with this ${tokenDetails.userDetails.email} . <br>
-                                <br>Please use following link to reset your password. <br>
+                                 To update password for this account ${tokenDetails.userDetails.email} . <br>
+                                <br>Click on the  following link to update your password. <br>
                                 <br> <a href="${applicationUrl}/resetPassword/${options.validationToken}">Click Here</a>                                 
                             </p>
     
-                            <br><b>Lets Meet</b>
+                            <br><strong>Meet Up App</strong>
                                         `
                     }
     
