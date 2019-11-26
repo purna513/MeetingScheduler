@@ -9,8 +9,8 @@ let myPhoneRequest = new Request('./../resources/phones.json');
 })
 export class UserManagementService {
 
-  public baseUrl = "http://localhost:3000/api/v1";
-  //public baseUrl = "http://api.thekalabhairava.com/api/v1";
+ // public baseUrl = "http://localhost:3000/api/v1";
+  public baseUrl = "http://api.thekalabhairava.com/api/v1";
  
   constructor(private _http: HttpClient) {
     console.log("User service intialized" + this.baseUrl);
