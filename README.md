@@ -162,13 +162,4 @@ code for mobile number (like 91 for India) will be automatically selected after 
 ## Authors
 
 * **Chandra Sekhar** - *Initial work* 
-* **Edwisor** - *Problem Statement* - [Edwisor](https://www.edwisor.com)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for detailsg
-
-## Acknowledgments
-
-* Thanks for Edwisor to review this application.
 
